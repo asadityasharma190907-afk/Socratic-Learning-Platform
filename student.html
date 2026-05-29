@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SahAI — Student Socratic Challenge</title>
+  <meta name="description" content="AI-powered Socratic learning challenges for students. Think deeper, learn smarter." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --slate-900: #0b0f19;          /* Deep Slate Canvas */
+      --slate-800: #141b2c;          /* Slate Glass Surface */
+      --slate-700: #1e2638;
+      --slate-600: #2b354d;
+      --slate-500: #3e4a68;
+      --indigo: #635bff;             /* Electric Indigo */
+      --indigo-light: #867fff;
+      --indigo-dim: rgba(99, 91, 255, 0.15);
+      --indigo-border: rgba(99, 91, 255, 0.3);
+      --mint: #1effa0;               /* Neon Mint (Success) */
+      --mint-dark: #00d980;
+      --mint-dim: rgba(30, 255, 160, 0.12);
+      --coral: #ff6b4a;              /* Sunset Coral (Hint) */
+      --coral-dim: rgba(255, 107, 74, 0.12);
+      --amber: #ffb347;
+      --white: #f1f5f9;              /* Clean Off-White */
+      --text-muted: #94a3b8;         /* Cool Grey Muted Text */
+      --text-dim: rgba(148, 163, 184, 0.6);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Outfit', sans-serif;
+      background: var(--slate-900);
+      color: var(--white);
+      overflow: hidden;
+    }
+
+    /* Background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(99, 91, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99, 91, 255, 0.035) 1px, transparent 1px);
+      background-size: 48px 48px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── TOP NAV ── */
+    .topnav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 64px;
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      z-index: 100;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    .nav-logo {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--indigo), var(--mint-dark));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .nav-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: linear-gradient(90deg, var(--white), var(--indigo-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    /* Online/Offline Toggle */
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--slate-800);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 100px;
+      padding: 0.3rem 0.8rem;
+    }
+
+    .toggle-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .status-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 100px;
+      transition: all 0.3s ease;
+    }
+
+    .status-badge.online {
+      background: var(--mint-dim);
+      color: var(--mint);
+    }
+
+    .status-badge.offline {
+      background: var(--coral-dim);
+      color: var(--coral);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 34px;
+      height: 20px;
+    }
+
+    .switch input { 
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: var(--slate-600);
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--indigo);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(14px);
+    }
+
+    .xp-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--indigo-dim);
+      border: 1px solid var(--indigo-border);
+      border-radius: 100px;
+      padding: 0.3rem 0.9rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--indigo-light);
+    }
+
+    .level-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--mint-dim);
+      border: 1px solid rgba(30, 255, 160, 0.25);
+      border-radius: 100px;
+      padding: 0.3rem 0.9rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--mint-dark);
+    }
+
+    .student-avatar {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--indigo), var(--indigo-light));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ── LAYOUT ── */
+    .app-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      height: 100vh;
+      padding-top: 64px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── LEFT VIEWPORT: WORKSPACE & CHAT ── */
+    .left-viewport {
+      display: grid;
+      grid-template-rows: 52% 48%; /* Split canvas and chat */
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      height: 100%;
+    }
+
+    /* ── CANVAS WORKSPACE ── */
+    .canvas-panel {
+      display: flex;
+      flex-direction: column;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 1rem 1.5rem;
+      overflow: hidden;
+      background: rgba(11, 15, 25, 0.2);
+    }
+
+    .canvas-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.6rem;
+    }
+
+    .challenge-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--indigo-dim);
+      border: 1px solid var(--indigo-border);
+      border-radius: 100px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.72rem;
+      color: var(--indigo-light);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .village-context {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 0.8rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 0.5rem 0.8rem;
+      border-radius: var(--rounded-md);
+    }
+
+    /* Interactive drag areas */
+    .workspace-area {
+      display: flex;
+      gap: 1.5rem;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 0;
+    }
+
+    /* Drag components repository */
+    .components-bin {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      width: 170px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 0.6rem;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .bin-title {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.3rem;
+      text-align: center;
+    }
+
+    .drag-node {
+      background: var(--slate-800);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: grab;
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+
+    .drag-node:hover {
+      border-color: var(--indigo);
+      box-shadow: 0 4px 12px rgba(99, 91, 255, 0.2);
+    }
+
+    .drag-node:active {
+      cursor: grabbing;
+    }
+
+    .drag-node.expensive {
+      border-color: rgba(255, 179, 71, 0.3);
+    }
+
+    /* System assembly pipeline */
+    .system-pipeline {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+      height: 100%;
+      align-items: center;
+    }
+
+    .pipeline-slot {
+      background: rgba(255, 255, 255, 0.01);
+      border: 2px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      height: 100%;
+      max-height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .pipeline-slot.highlight {
+      border-color: var(--indigo);
+      background: rgba(99, 91, 255, 0.05);
+    }
+
+    .pipeline-slot.filled {
+      border-style: solid;
+      background: var(--slate-800);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .slot-label {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      position: absolute;
+      bottom: 0.4rem;
+    }
+
+    .placed-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .placed-icon {
+      font-size: 1.6rem;
+    }
+
+    .remove-node-btn {
+      position: absolute;
+      top: 0.3rem; right: 0.3rem;
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0.1rem;
+    }
+
+    .remove-node-btn:hover { color: var(--coral); }
+
+    /* Action bar */
+    .canvas-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.5rem;
+    }
+
+    .budget-indicator {
+      font-size: 0.78rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .budget-indicator span {
+      color: var(--mint);
+    }
+
+    .test-idea-btn {
+      background: linear-gradient(135deg, var(--indigo), var(--indigo-light));
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1.2rem;
+      color: white;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(99, 91, 255, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .test-idea-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(99, 91, 255, 0.45);
+    }
+
+    .test-idea-btn:active {
+      transform: translateY(0);
+    }
+
+    /* ── CHAT PANEL (Lower Left) ── */
+    .chat-panel {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      scroll-behavior: smooth;
+    }
+
+    .chat-area::-webkit-scrollbar { width: 4px; }
+    .chat-area::-webkit-scrollbar-thumb { background: var(--slate-600); border-radius: 2px; }
+
+    /* Mascot Socratic Header */
+    .msg-ai {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      animation: fadeSlideIn 0.3s ease;
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .ai-avatar {
+      width: 36px; height: 36px;
+      background: var(--slate-800);
+      border: 1px solid var(--indigo-border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      box-shadow: 0 0 12px rgba(99, 91, 255, 0.25);
+      position: relative;
+      transition: all 0.4s ease;
+    }
+
+    .ai-avatar.thinking {
+      box-shadow: 0 0 15px rgba(30, 255, 160, 0.4);
+      border-color: var(--mint);
+    }
+
+    .ai-avatar.hint {
+      box-shadow: 0 0 15px rgba(255, 107, 74, 0.4);
+      border-color: var(--coral);
+    }
+
+    .ai-bubble {
+      background: var(--slate-800);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 4px 16px 16px 16px;
+      padding: 0.8rem 1.1rem;
+      max-width: 85%;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: rgba(241, 245, 249, 0.95);
+    }
+
+    .ai-bubble .ai-label {
+      font-size: 0.65rem;
+      color: var(--indigo-light);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+    }
+
+    .ai-bubble.hint {
+      background: var(--coral-dim);
+      border-color: rgba(255, 107, 74, 0.25);
+    }
+    .ai-bubble.hint .ai-label { color: var(--coral); }
+
+    .ai-bubble.decompose {
+      background: var(--mint-dim);
+      border-color: rgba(30, 255, 160, 0.25);
+    }
+    .ai-bubble.decompose .ai-label { color: var(--mint); }
+
+    /* Chips */
+    .scaffold-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.6rem;
+    }
+
+    .scaffold-chip {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 100px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .scaffold-chip:hover {
+      background: var(--indigo-dim);
+      border-color: var(--indigo);
+      color: var(--white);
+    }
+
+    /* Student message */
+    .msg-student {
+      display: flex;
+      justify-content: flex-end;
+      animation: fadeSlideIn 0.3s ease;
+    }
+
+    .student-bubble {
+      background: var(--indigo-dim);
+      border: 1px solid var(--indigo-border);
+      border-radius: 16px 4px 16px 16px;
+      padding: 0.8rem 1.1rem;
+      max-width: 80%;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    /* Feedback Banner */
+    .feedback-banner {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--mint-dim);
+      border: 1px solid rgba(30, 255, 160, 0.25);
+      border-radius: 10px;
+      padding: 0.6rem 0.9rem;
+      font-size: 0.8rem;
+      color: var(--mint);
+      animation: fadeSlideIn 0.3s ease;
+    }
+
+    .feedback-banner.warn {
+      background: var(--coral-dim);
+      border-color: rgba(255, 107, 74, 0.25);
+      color: var(--coral);
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+      background: var(--slate-800);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 4px 16px 16px 16px;
+      padding: 0.75rem 1rem;
+    }
+
+    .typing-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--indigo-light);
+      animation: typingBounce 1.2s ease-in-out infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* Input area */
+    .input-area {
+      padding: 0.8rem 1.5rem 1.2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      flex-shrink: 0;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-end;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: var(--slate-800);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      color: var(--white);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s ease;
+      max-height: 80px;
+      line-height: 1.5;
+    }
+
+    .chat-input::placeholder { color: var(--text-dim); }
+    .chat-input:focus { border-color: var(--indigo); }
+
+    .send-btn {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--indigo), var(--indigo-light));
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(99, 91, 255, 0.4); }
+
+    .hint-btn {
+      background: var(--coral-dim);
+      border: 1px solid rgba(255, 107, 74, 0.25);
+      border-radius: 100px;
+      padding: 0.3rem 0.8rem;
+      color: var(--coral);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 0.5rem;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .hint-btn:hover { background: rgba(255, 107, 74, 0.2); }
+
+    /* ── RIGHT PANEL: SKILLS ── */
+    .skills-panel {
+      background: var(--slate-800);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .skills-panel::-webkit-scrollbar { width: 4px; }
+    .skills-panel::-webkit-scrollbar-thumb { background: var(--slate-600); border-radius: 2px; }
+
+    .panel-section {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .panel-section-title {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    /* ── RADAR CHART ── */
+    .radar-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      max-width: 250px;
+      margin: 0 auto;
+    }
+
+    #radarCanvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Skill legend */
+    .skill-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .skill-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .skill-name {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .skill-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+    }
+
+    .skill-value {
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .skill-bar-track {
+      flex: 1;
+      height: 3px;
+      background: var(--slate-600);
+      border-radius: 2px;
+      margin: 0 0.5rem;
+      overflow: hidden;
+    }
+
+    .skill-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 1s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    /* ── XP PROGRESS ── */
+    .xp-bar-track {
+      height: 6px;
+      background: var(--slate-600);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 0.4rem;
+    }
+
+    .xp-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--indigo), var(--mint));
+      border-radius: 4px;
+      transition: width 1s ease;
+      position: relative;
+    }
+
+    .xp-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* ── BADGES ── */
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+
+    .badge-item {
+      background: var(--slate-700);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 10px;
+      padding: 0.6rem 0.3rem;
+      text-align: center;
+      transition: all 0.25s ease;
+    }
+
+    .badge-item:hover { border-color: var(--indigo-border); transform: translateY(-1px); }
+    .badge-item.locked { opacity: 0.25; }
+
+    .badge-icon { font-size: 1.25rem; margin-bottom: 0.25rem; }
+    .badge-name { font-size: 0.6rem; color: var(--text-muted); line-height: 1.2; }
+
+    /* ── CHALLENGE STEPS ── */
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      padding: 0.35rem 0;
+    }
+
+    .step-item.done { color: var(--mint); }
+    .step-item.active { color: var(--white); }
+
+    .step-indicator {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      border: 1.5px solid var(--slate-500);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      flex-shrink: 0;
+    }
+
+    .step-item.done .step-indicator { background: var(--mint); border-color: var(--mint); color: var(--slate-900); font-weight: 700; }
+    .step-item.active .step-indicator { border-color: var(--indigo); background: var(--indigo-dim); color: var(--indigo-light); }
+
+    @media (max-width: 950px) {
+      .app-layout { grid-template-columns: 1fr; }
+      .skills-panel { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <a href="index.html" class="nav-brand" id="nav-home-link">
+    <div class="nav-logo">⚡</div>
+    <span class="nav-title">SahAI for Shiksha</span>
+  </a>
+
+  <div class="nav-right">
+    <!-- Simulated Online/Offline Toggle -->
+    <div class="toggle-container">
+      <span class="toggle-label">Network:</span>
+      <label class="switch">
+        <input type="checkbox" id="networkToggle" checked onchange="toggleNetwork(this)">
+        <span class="slider"></span>
+      </label>
+      <span id="networkBadge" class="status-badge online">🟢 Online</span>
+    </div>
+
+    <div class="xp-badge"><span class="xp-icon">⚡</span> <span id="studentXp">1,240</span> XP</div>
+    <div class="level-badge">🌱 Level 4 — Thinker</div>
+    <div class="student-avatar" id="student-avatar-btn" title="Aarya Singh">AS</div>
+  </div>
+</nav>
+
+<!-- APP LAYOUT -->
+<div class="app-layout">
+
+  <!-- LEFT VIEWPORT: WORKSPACE & CHAT -->
+  <div class="left-viewport">
+    
+    <!-- CANVAS WORKSPACE -->
+    <div class="canvas-panel">
+      <div class="canvas-header">
+        <div class="challenge-tag">🌊 EVS · Rainwater Harvesting</div>
+        <div class="budget-indicator">Budget: <span id="budgetRemaining">₹12,000</span> / ₹12,000</div>
+      </div>
+      
+      <div class="village-context">
+        <strong>Village Context:</strong> Low annual rainfall. Silt-heavy runoff. Underground drinking well needs groundwater recharging. Standard membrane filters are too expensive.
+      </div>
+
+      <div class="workspace-area">
+        <!-- Draggable components bin -->
+        <div class="components-bin">
+          <div class="bin-title">Available Parts</div>
+          
+          <div class="drag-node" draggable="true" ondragstart="drag(event)" id="comp-rooftop" data-name="Rooftop Collector" data-icon="🏠" data-cost="2000">
+            <span>🏠</span> Rooftop Coll.
+          </div>
+          
+          <div class="drag-node" draggable="true" ondragstart="drag(event)" id="comp-diverter" data-name="First-Flush Diverter" data-icon="🚰" data-cost="1500">
+            <span>🚰</span> First-Flush Div.
+          </div>
+          
+          <div class="drag-node" draggable="true" ondragstart="drag(event)" id="comp-filter" data-name="Sand/Gravel Filter" data-icon="🥪" data-cost="2500">
+            <span>🥪</span> Sand/Gravel Filt.
+          </div>
+          
+          <div class="drag-node" draggable="true" ondragstart="drag(event)" id="comp-membrane" class="drag-node expensive" draggable="true" ondragstart="drag(event)" id="comp-membrane" data-name="Membrane Filter" data-icon="🔬" data-cost="8000">
+            <span>🔬</span> Membrane Filt.
+          </div>
+
+          <div class="drag-node" draggable="true" ondragstart="drag(event)" id="comp-well" data-name="Recharge Well Inlet" data-icon="🎛️" data-cost="3000">
+            <span>🎛️</span> Well Inlet
+          </div>
+        </div>
+
+        <!-- Target pipeline slots -->
+        <div class="system-pipeline">
+          <div class="pipeline-slot" id="slot-1" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 1)">
+            <span class="slot-label">Step 1: Intake</span>
+          </div>
+          
+          <div class="pipeline-slot" id="slot-2" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 2)">
+            <span class="slot-label">Step 2: Divert</span>
+          </div>
+
+          <div class="pipeline-slot" id="slot-3" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 3)">
+            <span class="slot-label">Step 3: Filter</span>
+          </div>
+
+          <div class="pipeline-slot" id="slot-4" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 4)">
+            <span class="slot-label">Step 4: Recharge</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="canvas-actions">
+        <button class="hint-btn" onclick="clearCanvas()" style="margin-top:0;background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.15);color:var(--white);">Reset Setup</button>
+        <button class="test-idea-btn" onclick="validateDesign()">Test My Design →</button>
+      </div>
+    </div>
+
+    <!-- CHAT PANEL -->
+    <div class="chat-panel">
+      <div class="chat-area" id="chatArea">
+        <div class="msg-ai">
+          <div class="ai-avatar" id="mascotAvatar">🏮</div>
+          <div class="ai-bubble">
+            <div class="ai-label">Sparky the Mentor</div>
+            <strong>Welcome back, Aarya!</strong> 🌱 We need your help to capture clean rainwater for the village. <br/><br/>
+            Drag components from the <strong>Available Parts</strong> bin on the left into the 4 slots of our **Rainwater Harvesting Pipeline** above. Once your design is complete, click <strong>"Test My Design"</strong> so we can evaluate it together!
+          </div>
+        </div>
+
+        <div class="typing-indicator" id="typingIndicator" style="display:none;">
+          <div class="ai-avatar">🏮</div>
+          <div class="typing-dots">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-area">
+        <div class="input-row">
+          <textarea
+            id="studentInput"
+            class="chat-input"
+            placeholder="Talk with Sparky or answer the Socratic questions..."
+            rows="1"
+            onkeydown="handleKey(event)"
+          ></textarea>
+          <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+        </div>
+        <button class="hint-btn" id="hintBtn" onclick="requestHint()">💡 Ask Sparky for a Hint</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: SKILLS PANEL -->
+  <div class="skills-panel">
+
+    <!-- Radar -->
+    <div class="panel-section">
+      <div class="panel-section-title">Skill Growth Radar</div>
+      <div class="radar-container">
+        <canvas id="radarCanvas" width="250" height="250"></canvas>
+      </div>
+      <div class="skill-legend">
+        <div class="skill-item">
+          <span class="skill-name"><span class="skill-dot" style="background:#635bff"></span>Hydrology</span>
+          <div class="skill-bar-track"><div class="skill-bar-fill" id="bar-academic" style="width:72%;background:#635bff"></div></div>
+          <span class="skill-value" style="color:#635bff" id="val-academic">72</span>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name"><span class="skill-dot" style="background:#1effa0"></span>Critical Think.</span>
+          <div class="skill-bar-track"><div class="skill-bar-fill" id="bar-critical" style="width:58%;background:#1effa0"></div></div>
+          <span class="skill-value" style="color:#1effa0" id="val-critical">58</span>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name"><span class="skill-dot" style="background:#ffb347"></span>Perseverance</span>
+          <div class="skill-bar-track"><div class="skill-bar-fill" id="bar-grit" style="width:85%;background:#ffb347"></div></div>
+          <span class="skill-value" style="color:#ffb347" id="val-grit">85</span>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name"><span class="skill-dot" style="background:#ff6b4a"></span>Collaboration</span>
+          <div class="skill-bar-track"><div class="skill-bar-fill" id="bar-collab" style="width:64%;background:#ff6b4a"></div></div>
+          <span class="skill-value" style="color:#ff6b4a" id="val-collab">64</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- XP Progress -->
+    <div class="panel-section">
+      <div class="panel-section-title">Level Progress</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;">
+        <span style="font-size:0.8rem;font-weight:600;">🌱 Level 4 — Thinker</span>
+        <span style="font-size:0.72rem;color:var(--text-muted)">→ Level 5</span>
+      </div>
+      <div class="xp-bar-track">
+        <div class="xp-bar-fill" style="width:62%" id="xpBarFill"></div>
+      </div>
+      <div class="xp-row">
+        <span id="progressXp">1,240 XP</span>
+        <span>2,000 XP</span>
+      </div>
+    </div>
+
+    <!-- Challenge Steps -->
+    <div class="panel-section">
+      <div class="panel-section-title">Challenge Progress</div>
+      <div class="steps-list">
+        <div class="step-item done" id="step-1-item">
+          <div class="step-indicator">✓</div>
+          Evaluate village soil & constraints
+        </div>
+        <div class="step-item active" id="step-2-item">
+          <div class="step-indicator">2</div>
+          Design standard pipeline layout
+        </div>
+        <div class="step-item" id="step-3-item">
+          <div class="step-indicator">3</div>
+          Optimize cost & local materials
+        </div>
+        <div class="step-item" id="step-4-item">
+          <div class="step-indicator">4</div>
+          Verify clean recharging
+        </div>
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div class="panel-section">
+      <div class="panel-section-title">Badges</div>
+      <div class="badges-grid">
+        <div class="badge-item" title="First Challenger">
+          <div class="badge-icon">🎯</div>
+          <div class="badge-name">First Chal.</div>
+        </div>
+        <div class="badge-item" title="Deep Thinker">
+          <div class="badge-icon">🧠</div>
+          <div class="badge-name">Deep Thinker</div>
+        </div>
+        <div class="badge-item locked" id="badge-resilience" title="Resilience Badge — Locked">
+          <div class="badge-icon">💪</div>
+          <div class="badge-name">Resilience</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ── STATE VARIABLES ──
+  let studentXp = 1240;
+  let budget = 12000;
+  const pipeline = [null, null, null, null]; // Slots 1 to 4
+  let isOnline = true;
+
+  // Initialize from LocalStorage if exists
+  if (localStorage.getItem('studentXp')) {
+    studentXp = parseInt(localStorage.getItem('studentXp'));
+    document.getElementById('studentXp').textContent = studentXp.toLocaleString();
+    document.getElementById('progressXp').textContent = studentXp.toLocaleString() + ' XP';
+    document.getElementById('xpBarFill').style.width = ((studentXp - 1000) / 1000 * 100) + '%';
+  }
+
+  // ── RADAR CHART ──
+  const skillData = [72, 58, 85, 64];
+  const skillColors = ['#635bff','#1effa0','#ffb347','#ff6b4a'];
+  const labels = ['Hydrology', 'Critical', 'Grit', 'Collab'];
+  const canvas = document.getElementById('radarCanvas');
+
+  function drawRadar(canvas, data, colors) {
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const cx = W / 2, cy = H / 2;
+    const R = Math.min(W, H) * 0.38;
+    const N = data.length;
+    const step = (Math.PI * 2) / N;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Grid rings
+    for (let r = 1; r <= 5; r++) {
+      ctx.beginPath();
+      for (let i = 0; i < N; i++) {
+        const angle = step * i - Math.PI / 2;
+        const x = cx + Math.cos(angle) * (R * r / 5);
+        const y = cy + Math.sin(angle) * (R * r / 5);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = r === 5 ? 'rgba(99, 91, 255, 0.2)' : 'rgba(255, 255, 255, 0.05)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // Axes
+    for (let i = 0; i < N; i++) {
+      const angle = step * i - Math.PI / 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + Math.cos(angle) * R, cy + Math.sin(angle) * R);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.07)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    // Data polygon
+    ctx.save();
+    ctx.shadowColor = 'rgba(99, 91, 255, 0.5)';
+    ctx.shadowBlur = 12;
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const angle = step * i - Math.PI / 2;
+      const val = data[i] / 100;
+      const x = cx + Math.cos(angle) * R * val;
+      const y = cy + Math.sin(angle) * R * val;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(99, 91, 255, 0.12)';
+    ctx.fill();
+    ctx.strokeStyle = '#635bff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.restore();
+
+    // Data points
+    for (let i = 0; i < N; i++) {
+      const angle = step * i - Math.PI / 2;
+      const val = data[i] / 100;
+      const x = cx + Math.cos(angle) * R * val;
+      const y = cy + Math.sin(angle) * R * val;
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = colors[i];
+      ctx.fill();
+    }
+
+    // Labels
+    ctx.font = '600 11px Outfit, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for (let i = 0; i < N; i++) {
+      const angle = step * i - Math.PI / 2;
+      const lx = cx + Math.cos(angle) * (R + 24);
+      const ly = cy + Math.sin(angle) * (R + 20);
+      ctx.fillStyle = 'rgba(148, 163, 184, 0.9)';
+      ctx.fillText(labels[i], lx, ly);
+    }
+  }
+
+  let animFrame = 0;
+  function animateRadar() {
+    animFrame++;
+    const t = Math.min(animFrame / 30, 1);
+    drawRadar(canvas, skillData.map(v => v * t), skillColors);
+    if (t < 1) requestAnimationFrame(animateRadar);
+  }
+  requestAnimationFrame(animateRadar);
+
+  // ── ONLINE/OFFLINE TOGGLE ──
+  function toggleNetwork(checkbox) {
+    isOnline = checkbox.checked;
+    const badge = document.getElementById('networkBadge');
+    if (isOnline) {
+      badge.textContent = '🟢 Online';
+      badge.className = 'status-badge online';
+      showNotification("Connected back online! Dynamic Socratic AI active.");
+    } else {
+      badge.textContent = '🟡 Offline Mode';
+      badge.className = 'status-badge offline';
+      showNotification("Running offline. Pre-loaded local Socratic trees active.");
+    }
+  }
+
+  // ── DRAG AND DROP LOGIC ──
+  function allowDrop(ev) {
+    ev.preventDefault();
+    ev.currentTarget.classList.add('highlight');
+  }
+
+  function dragLeave(ev) {
+    ev.currentTarget.classList.remove('highlight');
+  }
+
+  function drag(ev) {
+    ev.dataTransfer.setData("nodeId", ev.target.id);
+  }
+
+  function drop(ev, slotIndex) {
+    ev.preventDefault();
+    const slot = ev.currentTarget;
+    slot.classList.remove('highlight');
+    
+    const nodeId = ev.dataTransfer.getData("nodeId");
+    const originalNode = document.getElementById(nodeId);
+    
+    const nodeName = originalNode.dataset.name;
+    const icon = originalNode.dataset.icon;
+    const cost = parseInt(originalNode.dataset.cost);
+
+    // Budget check
+    if (budget - cost < 0) {
+      showNotification("Not enough budget left for this component!");
+      return;
+    }
+
+    // Place element in local array state
+    pipeline[slotIndex - 1] = { id: nodeId, name: nodeName, icon: icon, cost: cost };
+    budget -= cost;
+
+    // Update UI elements
+    updateBudgetUI();
+    slot.classList.add('filled');
+    slot.innerHTML = `
+      <div class="placed-item">
+        <span class="placed-icon">${icon}</span>
+        <span>${nodeName}</span>
+      </div>
+      <button class="remove-node-btn" onclick="removeNode(${slotIndex})">✕</button>
+    `;
+  }
+
+  function removeNode(slotIndex) {
+    const item = pipeline[slotIndex - 1];
+    if (!item) return;
+
+    budget += item.cost;
+    pipeline[slotIndex - 1] = null;
+
+    updateBudgetUI();
+
+    const slot = document.getElementById(`slot-${slotIndex}`);
+    slot.classList.remove('filled');
+    const labelNames = ["Intake", "Divert", "Filter", "Recharge"];
+    slot.innerHTML = `<span class="slot-label">Step ${slotIndex}: ${labelNames[slotIndex - 1]}</span>`;
+  }
+
+  function clearCanvas() {
+    for (let i = 1; i <= 4; i++) {
+      removeNode(i);
+    }
+    showNotification("Workspace reset complete.");
+  }
+
+  function updateBudgetUI() {
+    document.getElementById('budgetRemaining').textContent = '₹' + budget.toLocaleString();
+    if (budget < 3000) {
+      document.getElementById('budgetRemaining').style.color = 'var(--coral)';
+    } else {
+      document.getElementById('budgetRemaining').style.color = 'var(--mint)';
+    }
+  }
+
+  // ── SOCRATIC ENGINE VALIDATION ──
+  let currentDialogPhase = 0; 
+  let socraticState = null; 
+
+  function validateDesign() {
+    // 1. Check if slots are filled
+    const intake = pipeline[0];
+    const divert = pipeline[1];
+    const filter = pipeline[2];
+    const recharge = pipeline[3];
+
+    showTyping();
+
+    setTimeout(() => {
+      hideTyping();
+
+      // Case: Empty Setup
+      if (!intake && !divert && !filter && !recharge) {
+        addAIBubble({
+          type: 'hint',
+          text: "Let's put our heads together, beta! Place the Rooftop Collector in Step 1 to start capturing the rainfall!"
+        });
+        return;
+      }
+
+      // Case: Direct Connection (No filter, no diverter)
+      if (intake && recharge && !divert && !filter) {
+        setMascotState('hint');
+        addAIBubble({
+          type: 'hint',
+          text: "A lovely start, beta! The rooftop collects the rain, and it flows straight to the well. But think about the very first heavy rain of the monsoon. It washes off all the dry summer dust and leaves from the roof. If the water flows straight down, where will all that dust go?",
+          chips: ["It will go straight into our drinking well!", "It will get filtered automatically by earth."]
+        });
+        socraticState = 'direct_connection_dust';
+        return;
+      }
+
+      // Case: No first flush diverter placed (but filter is placed)
+      if (intake && filter && recharge && !divert) {
+        setMascotState('hint');
+        addAIBubble({
+          type: 'hint',
+          text: "You layered a filter! That will catch silt. But think: if the heavy dust, mud, and dry leaves from the very first rain hit the filter immediately, won't our local filter get clogged up on day one? How can we avoid that first muddy wave?",
+          chips: ["Add a First-Flush Diverter to bypass it", "Just clean the filter daily"]
+        });
+        socraticState = 'first_flush_divert';
+        return;
+      }
+
+      // Case: High tech membrane filter used (Budget crash check)
+      if (intake && divert && filter && filter.id === 'comp-membrane') {
+        setMascotState('hint');
+        addAIBubble({
+          type: 'hint',
+          text: "A very clean membrane filter indeed, beta! But look at the budget indicator: we spent a huge chunk! Membrane filters cost a lot to replace, and the village school has low funds. What natural, local materials could we layer in Step 3 instead to keep it extremely cheap but efficient?",
+          chips: ["Replace it with the Sand/Gravel Filter", "Keep the expensive membrane"]
+        });
+        socraticState = 'budget_filter_choice';
+        return;
+      }
+
+      // Case: Correct configuration (Rooftop + Diverter + Sand/Gravel + Well)
+      if (intake && intake.id === 'comp-rooftop' &&
+          divert && divert.id === 'comp-diverter' &&
+          filter && filter.id === 'comp-filter' &&
+          recharge && recharge.id === 'comp-well') {
+        
+        setMascotState('success');
+        addFeedbackBanner("✅ Congratulations! System Designed Successfully!");
+        
+        addAIBubble({
+          type: 'decompose',
+          text: "<strong>Incredible work, beta! 🏮✨</strong> You have designed a flawless, low-cost rainwater harvesting recharge system for the village! You bypassed the initial dust, filtered the silt with sand and gravel, and safely recharged the groundwater.<br/><br/>You have mastered **Hydrology & Infrastructure Planning**! +150 XP!"
+        });
+
+        // Award rewards
+        awardXP(150);
+        document.getElementById('badge-resilience').classList.remove('locked');
+        document.getElementById('step-2-item').className = 'step-item done';
+        document.getElementById('step-2-item').querySelector('.step-indicator').textContent = '✓';
+        document.getElementById('step-3-item').className = 'step-item active';
+
+        // Update skill metrics inline
+        skillData[0] = 92; // Hydrology up
+        skillData[1] = 84; // Critical up
+        skillData[2] = 98; // Perseverance up
+        animFrame = 0;
+        animateRadar();
+        return;
+      }
+
+      // Fallback
+      addAIBubble({
+        type: 'hint',
+        text: "You are experimental, beta! Let's trace the water: it must flow from Rooftop (Step 1) -> First-Flush (Step 2) -> Sand/Gravel Filter (Step 3) -> Recharge Well (Step 4) to ensure absolute purity and cost efficiency. Give that sequence a shot!"
+      });
+
+    }, 1500);
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  }
+
+  function sendMessage() {
+    const input = document.getElementById('studentInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    addStudentBubble(text);
+    input.value = '';
+
+    showTyping();
+
+    setTimeout(() => {
+      hideTyping();
+
+      // Socratic Response Flow
+      if (socraticState === 'direct_connection_dust') {
+        if (text.includes("drinking well") || text.includes("1")) {
+          addAIBubble({
+            type: 'decompose',
+            text: "Exactly, beta! The dusty runoff would ruin the clean village groundwater. That's why we need a way to bypass the first flush of rain. Try placing the <strong>First-Flush Diverter</strong> in Step 2 to solve this!"
+          });
+        } else {
+          addAIBubble({
+            type: 'hint',
+            text: "Think again, beta! Dust and debris washed from the dry roof will settle down in the well water. How can we bypass that very first dirty splash of rain?"
+          });
+        }
+        socraticState = null;
+        return;
+      }
+
+      if (socraticState === 'first_flush_divert') {
+        addAIBubble({
+          type: 'decompose',
+          text: "Correct! The First-Flush Diverter will wash the dust aside. Try placing it in Step 2 so only the cleaner water gets to our filter!"
+        });
+        socraticState = null;
+        return;
+      }
+
+      if (socraticState === 'budget_filter_choice') {
+        addAIBubble({
+          type: 'decompose',
+          text: "Spot on! Replacing it with a low-cost <strong>Sand/Gravel Filter</strong> cuts the initial setup and maintenance costs, making our system highly sustainable!"
+        });
+        socraticState = null;
+        return;
+      }
+
+      // General fallback reply
+      addAIBubble({
+        type: 'hint',
+        text: "I hear your thinking, beta! Every attempt teaches us how water behaves. Make adjustments on our visual canvas above and hit 'Test My Design' to see Sparky evaluate it!"
+      });
+
+    }, 1500);
+  }
+
+  function requestHint() {
+    showTyping();
+    setMascotState('hint');
+    setTimeout(() => {
+      hideTyping();
+      addAIBubble({
+        type: 'hint',
+        text: "A gentle nudge, beta! 💡 The water should pass through a filter of sand and gravel before entering the recharge well. Make sure you place the <strong>Sand/Gravel Filter</strong> in Step 3!"
+      });
+    }, 1000);
+  }
+
+  function addStudentBubble(text) {
+    const chat = document.getElementById('chatArea');
+    const div = document.createElement('div');
+    div.className = 'msg-student';
+    div.innerHTML = `<div class="student-bubble">${escapeHtml(text)}</div>`;
+    chat.insertBefore(div, document.getElementById('typingIndicator'));
+    scrollChat();
+  }
+
+  function addAIBubble(resp) {
+    const chat = document.getElementById('chatArea');
+    const div = document.createElement('div');
+    div.className = 'msg-ai';
+
+    let chipsHtml = '';
+    if (resp.chips) {
+      chipsHtml = `<div class="scaffold-chips">` +
+        resp.chips.map(c => `<div class="scaffold-chip" onclick="fillInput('${c}')">${c}</div>`).join('') +
+        `</div>`;
+    }
+
+    const bubbleClass = resp.type === 'hint' ? 'ai-bubble hint' :
+                        resp.type === 'decompose' ? 'ai-bubble decompose' : 'ai-bubble';
+
+    const labelText = resp.type === 'hint' ? '💡 Sparky\'s Hint' :
+                      resp.type === 'decompose' ? '🧩 Socratic Step' : '🏮 Sparky';
+
+    div.innerHTML = `
+      <div class="ai-avatar" id="sparkyAvatar">🏮</div>
+      <div class="${bubbleClass}">
+        <div class="ai-label">${labelText}</div>
+        ${resp.text}
+        ${chipsHtml}
+      </div>
+    `;
+    chat.insertBefore(div, document.getElementById('typingIndicator'));
+    scrollChat();
+  }
+
+  function addFeedbackBanner(text, type = 'success') {
+    const chat = document.getElementById('chatArea');
+    const div = document.createElement('div');
+    div.className = `feedback-banner ${type === 'warn' ? 'warn' : ''}`;
+    div.innerHTML = `<span><strong>${text}</strong></span>`;
+    chat.insertBefore(div, document.getElementById('typingIndicator'));
+    scrollChat();
+  }
+
+  function showTyping() {
+    document.getElementById('typingIndicator').style.display = 'flex';
+    scrollChat();
+  }
+
+  function hideTyping() {
+    document.getElementById('typingIndicator').style.display = 'none';
+  }
+
+  function scrollChat() {
+    const chat = document.getElementById('chatArea');
+    setTimeout(() => chat.scrollTop = chat.scrollHeight, 50);
+  }
+
+  function fillInput(text) {
+    document.getElementById('studentInput').value = text;
+    document.getElementById('studentInput').focus();
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function setMascotState(state) {
+    const avatar = document.getElementById('mascotAvatar');
+    if (!avatar) return;
+    avatar.className = 'ai-avatar';
+    if (state === 'success') {
+      avatar.textContent = '🌟';
+      avatar.className = 'ai-avatar thinking';
+    } else if (state === 'hint') {
+      avatar.textContent = '💡';
+      avatar.className = 'ai-avatar hint';
+    } else {
+      avatar.textContent = '🏮';
+    }
+  }
+
+  function awardXP(amount) {
+    studentXp += amount;
+    localStorage.setItem('studentXp', studentXp);
+    document.getElementById('studentXp').textContent = studentXp.toLocaleString();
+    document.getElementById('progressXp').textContent = studentXp.toLocaleString() + ' XP';
+    
+    const xpPct = ((studentXp - 1000) / 1000 * 100);
+    document.getElementById('xpBarFill').style.width = xpPct + '%';
+
+    // Broadcast update to Teacher Cockpit (using LocalStorage communication)
+    localStorage.setItem('teacherXpUpdate', JSON.stringify({ name: 'Aarya S.', xp: studentXp, status: 'thriving' }));
+  }
+
+  // ── TOAST NOTIFICATION ──
+  let toastTimeout;
+  function showNotification(msg) {
+    // Create toast div if doesn't exist
+    let toast = document.getElementById('toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'toast';
+      toast.setAttribute('style', `
+        position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%) translateY(80px);
+        background:var(--slate-800); border:1px solid var(--indigo-border);
+        border-radius:12px; padding:0.75rem 1.5rem;
+        font-size:0.85rem; color:var(--white);
+        z-index:999; transition:transform 0.3s ease; pointer-events:none;
+        white-space:nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      `);
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      toast.style.transform = 'translateX(-50%) translateY(80px)';
+    }, 2800);
+  }
+</script>
+</body>
+</html>

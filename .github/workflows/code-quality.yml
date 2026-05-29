@@ -1,0 +1,36 @@
+name: 🔍 Code Quality Audit
+
+on:
+  push:
+    branches: ["main", "chore/remove-agent-files"]
+  pull_request:
+    branches: ["main"]
+
+# Prevent concurrent runs from wasting resources
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: 🩺 HTML & Accessibility Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install HTMLHint Linter
+        run: npm install -g htmlhint
+
+      - name: 🏷️ Scan HTML Files
+        run: |
+          htmlhint "index.html"
+          htmlhint "student.html"
+          htmlhint "teacher.html"
+          htmlhint "pitch-deck.html"

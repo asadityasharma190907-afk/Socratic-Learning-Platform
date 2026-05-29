@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SahAI for Shiksha — Hackathon Pitch Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --slate-900: #0d1117;
+      --slate-800: #161b27;
+      --slate-700: #1e2537;
+      --slate-600: #2a3347;
+      --indigo: #6C63FF;
+      --indigo-light: #8B85FF;
+      --indigo-dark: #4F46E5;
+      --mint: #00F5A0;
+      --mint-dark: #00C97E;
+      --coral: #FF6B6B;
+      --amber: #FFB347;
+      --white: #F8FAFF;
+      --text-muted: #8899BB;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100%;
+      font-family: 'Outfit', sans-serif;
+      background: #000;
+      overflow: hidden;
+      color: var(--white);
+    }
+
+    /* ── SLIDE DECK WRAPPER ── */
+    .deck {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── INDIVIDUAL SLIDE ── */
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 6rem;
+      opacity: 0;
+      transform: translateX(60px);
+      transition: opacity 0.5s cubic-bezier(0.23,1,0.32,1), transform 0.5s cubic-bezier(0.23,1,0.32,1);
+      pointer-events: none;
+      background: var(--slate-900);
+      overflow: hidden;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: all;
+    }
+
+    .slide.exit {
+      opacity: 0;
+      transform: translateX(-60px);
+    }
+
+    /* Grid BG */
+    .slide::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(108,99,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(108,99,255,0.04) 1px, transparent 1px);
+      background-size: 56px 56px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .slide > * { position: relative; z-index: 1; }
+
+    /* ── SHARED ELEMENTS ── */
+    .slide-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--indigo-light);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .slide-label::before {
+      content: '';
+      display: inline-block;
+      width: 24px; height: 2px;
+      background: var(--indigo);
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 5vw, 4.8rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+
+    h2 {
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+    }
+
+    .grad-text {
+      background: linear-gradient(135deg, var(--white) 0%, var(--indigo-light) 50%, var(--mint) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .coral-text {
+      background: linear-gradient(135deg, var(--coral), var(--amber));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .body-text {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      max-width: 680px;
+    }
+
+    /* ── NAV CONTROLS ── */
+    .nav-bar {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(30,37,55,0.9);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 100px;
+      padding: 0.6rem 1.2rem;
+      z-index: 1000;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .nav-btn:hover { color: var(--white); background: rgba(108,99,255,0.15); }
+    .nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+    .slide-counter {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .nav-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .nav-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--slate-600);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .nav-dot.active { background: var(--indigo); width: 18px; border-radius: 3px; }
+
+    /* ── SLIDE 1: COVER ── */
+    #slide-1 { text-align: center; }
+
+    .cover-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(108,99,255,0.12);
+      border: 1px solid rgba(108,99,255,0.3);
+      border-radius: 100px;
+      padding: 0.4rem 1.2rem;
+      font-size: 0.78rem;
+      color: var(--indigo-light);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      margin-bottom: 2rem;
+    }
+
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--mint);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.5; }
+    }
+
+    #slide-1 h1 { margin-bottom: 1.2rem; }
+
+    .cover-sub {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    .cover-team {
+      font-size: 0.82rem;
+      color: rgba(136,153,187,0.5);
+      letter-spacing: 0.08em;
+    }
+
+    /* Orbs on cover */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+    }
+
+    .orb-a { width:500px; height:500px; background:rgba(108,99,255,0.1); top:-150px; left:-150px; }
+    .orb-b { width:350px; height:350px; background:rgba(0,245,160,0.08); bottom:-100px; right:-80px; }
+
+    /* ── SLIDE 2: THE PROBLEM ── */
+    #slide-2 { align-items: flex-start; }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      width: 100%;
+      max-width: 900px;
+      margin-top: 2rem;
+    }
+
+    .problem-card {
+      background: rgba(255,107,107,0.07);
+      border: 1px solid rgba(255,107,107,0.2);
+      border-radius: 16px;
+      padding: 1.4rem;
+    }
+
+    .problem-stat {
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: var(--coral);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+
+    .problem-label {
+      font-size: 0.85rem;
+      color: rgba(255,107,107,0.7);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    /* ── SLIDE 3: THE VISION ── */
+    #slide-3 {
+      text-align: center;
+    }
+
+    .vision-quote {
+      font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+      font-weight: 500;
+      line-height: 1.6;
+      color: var(--white);
+      max-width: 780px;
+      margin: 2rem auto;
+      font-style: italic;
+      opacity: 0.9;
+    }
+
+    .vision-quote em {
+      font-style: normal;
+      color: var(--mint);
+      font-weight: 700;
+    }
+
+    /* ── SLIDE 4: HOW IT WORKS ── */
+    #slide-4 { align-items: flex-start; }
+
+    .flow-steps {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      width: 100%;
+      max-width: 960px;
+      margin-top: 2rem;
+    }
+
+    .flow-step {
+      flex: 1;
+      background: var(--slate-800);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 0;
+      padding: 1.6rem 1.2rem;
+      position: relative;
+      text-align: center;
+    }
+
+    .flow-step:first-child { border-radius: 16px 0 0 16px; }
+    .flow-step:last-child { border-radius: 0 16px 16px 0; }
+
+    .flow-step + .flow-step { border-left: none; }
+
+    .flow-arrow {
+      position: absolute;
+      right: -16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px; height: 32px;
+      background: var(--slate-900);
+      border: 1px solid rgba(108,99,255,0.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem;
+      color: var(--indigo-light);
+      z-index: 2;
+    }
+
+    .flow-step:last-child .flow-arrow { display: none; }
+
+    .step-num {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--indigo-light);
+      background: rgba(108,99,255,0.12);
+      border-radius: 100px;
+      padding: 0.2rem 0.6rem;
+      display: inline-block;
+      margin-bottom: 0.75rem;
+    }
+
+    .step-icon { font-size: 2rem; margin-bottom: 0.6rem; }
+
+    .step-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      color: var(--white);
+    }
+
+    .step-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── SLIDE 5: THREE PILLARS ── */
+    #slide-5 { align-items: flex-start; }
+
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 1.2rem;
+      width: 100%;
+      max-width: 960px;
+      margin-top: 2rem;
+    }
+
+    .pillar-card {
+      border-radius: 20px;
+      padding: 1.8rem 1.4rem;
+      border: 1px solid;
+    }
+
+    .pillar-card.p1 { background: rgba(108,99,255,0.08); border-color: rgba(108,99,255,0.2); }
+    .pillar-card.p2 { background: rgba(0,245,160,0.06); border-color: rgba(0,245,160,0.18); }
+    .pillar-card.p3 { background: rgba(255,107,107,0.07); border-color: rgba(255,107,107,0.18); }
+
+    .pillar-icon { font-size: 2.4rem; margin-bottom: 1rem; }
+
+    .pillar-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+    }
+
+    .pillar-card.p1 .pillar-title { color: var(--indigo-light); }
+    .pillar-card.p2 .pillar-title { color: var(--mint); }
+    .pillar-card.p3 .pillar-title { color: var(--coral); }
+
+    .pillar-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    /* ── SLIDE 6: STUDENT EXPERIENCE ── */
+    #slide-6 { align-items: flex-start; gap: 1.5rem; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .chat-mockup {
+      background: var(--slate-800);
+      border: 1px solid rgba(108,99,255,0.2);
+      border-radius: 20px;
+      padding: 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .cm-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 0.3rem;
+    }
+
+    .cm-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    .cm-msg {
+      border-radius: 4px 14px 14px 14px;
+      padding: 0.75rem 0.9rem;
+      font-size: 0.75rem;
+      line-height: 1.5;
+    }
+
+    .cm-ai { background: rgba(108,99,255,0.15); border: 1px solid rgba(108,99,255,0.2); color: rgba(248,250,255,0.85); }
+    .cm-student { background: rgba(108,99,255,0.25); border: 1px solid rgba(108,99,255,0.35); color: var(--white); border-radius: 14px 4px 14px 14px; align-self: flex-end; max-width: 85%; }
+    .cm-hint { background: rgba(0,245,160,0.08); border: 1px solid rgba(0,245,160,0.2); border-radius: 4px 14px 14px 14px; color: var(--mint); font-size: 0.72rem; padding: 0.6rem 0.9rem; }
+
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      justify-content: center;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: rgba(248,250,255,0.85);
+    }
+
+    .feature-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: 0.05rem;
+    }
+
+    /* ── SLIDE 7: TEACHER COCKPIT ── */
+    #slide-7 { align-items: flex-start; }
+
+    .cockpit-preview {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 0.9fr;
+      gap: 1rem;
+      width: 100%;
+      max-width: 960px;
+      margin-top: 2rem;
+    }
+
+    .cockpit-card {
+      background: var(--slate-800);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 1.2rem;
+    }
+
+    .ck-title {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.9rem;
+    }
+
+    .student-dots {
+      display: grid;
+      grid-template-columns: repeat(5,1fr);
+      gap: 5px;
+    }
+
+    .sdot {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 6px;
+    }
+
+    .sdot.t { background: rgba(0,245,160,0.3); border: 1px solid rgba(0,245,160,0.4); }
+    .sdot.a { background: rgba(255,179,71,0.3); border: 1px solid rgba(255,179,71,0.4); }
+    .sdot.s { background: rgba(255,107,107,0.3); border: 1px solid rgba(255,107,107,0.4); }
+
+    .gap-bar-item { margin-bottom: 0.65rem; }
+    .gap-name { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.25rem; display: flex; justify-content: space-between; }
+    .gap-track { height: 6px; background: var(--slate-600); border-radius: 3px; overflow: hidden; }
+    .gap-fill { height: 100%; border-radius: 3px; }
+
+    .alert-item {
+      font-size: 0.72rem;
+      padding: 0.5rem 0.7rem;
+      border-left: 3px solid;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+      color: rgba(248,250,255,0.8);
+    }
+
+    .alert-item.u { border-color: var(--coral); background: rgba(255,107,107,0.07); }
+    .alert-item.w { border-color: var(--amber); background: rgba(255,179,71,0.07); }
+    .alert-item.p { border-color: var(--mint); background: rgba(0,245,160,0.07); }
+
+    /* ── SLIDE 8: DIFFERENTIATORS ── */
+    #slide-8 { align-items: flex-start; }
+
+    .diff-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      width: 100%;
+      max-width: 880px;
+      margin-top: 2rem;
+    }
+
+    .diff-card {
+      background: var(--slate-800);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 1.4rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .diff-icon { font-size: 1.8rem; flex-shrink: 0; }
+
+    .diff-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.35rem; color: var(--white); }
+    .diff-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; }
+
+    .vs-badge {
+      display: inline-block;
+      background: rgba(255,107,107,0.1);
+      border: 1px solid rgba(255,107,107,0.2);
+      border-radius: 6px;
+      font-size: 0.65rem;
+      padding: 0.15rem 0.4rem;
+      color: var(--coral);
+      font-weight: 600;
+      margin-top: 0.4rem;
+    }
+
+    /* ── SLIDE 9: TECH + ARCHITECTURE ── */
+    #slide-9 { align-items: flex-start; }
+
+    .arch-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 900px;
+      margin-top: 1.5rem;
+    }
+
+    .arch-section-title {
+      font-size: 0.72rem;
+      color: var(--indigo-light);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(108,99,255,0.2);
+    }
+
+    .tech-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: var(--slate-700);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 0.3rem 0.7rem;
+      font-size: 0.75rem;
+      margin: 0.2rem;
+      color: rgba(248,250,255,0.8);
+    }
+
+    .constraint-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.7rem;
+      line-height: 1.5;
+    }
+
+    .c-icon { font-size: 1rem; flex-shrink: 0; }
+
+    /* ── SLIDE 10: ROADMAP ── */
+    #slide-10 { align-items: flex-start; }
+
+    .roadmap-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      width: 100%;
+      max-width: 800px;
+      margin-top: 2rem;
+      position: relative;
+    }
+
+    .roadmap-timeline::before {
+      content: '';
+      position: absolute;
+      left: 22px;
+      top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--indigo), var(--mint), rgba(255,255,255,0.1));
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 1.5rem;
+      padding-bottom: 1.8rem;
+      align-items: flex-start;
+    }
+
+    .tl-node {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tl-node.done { background: var(--mint); color: var(--slate-900); }
+    .tl-node.now { background: linear-gradient(135deg, var(--indigo-dark), var(--indigo)); color: white; box-shadow: 0 0 20px rgba(108,99,255,0.4); }
+    .tl-node.next { background: var(--slate-700); border: 2px solid var(--slate-500); }
+    .tl-node.future { background: var(--slate-800); border: 2px dashed var(--slate-500); opacity: 0.5; }
+
+    .tl-content { padding-top: 0.6rem; }
+    .tl-date { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.2rem; }
+    .tl-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .tl-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+    .now-badge {
+      display: inline-block;
+      background: rgba(108,99,255,0.2);
+      border: 1px solid rgba(108,99,255,0.4);
+      border-radius: 100px;
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+      color: var(--indigo-light);
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+
+    /* ── SLIDE 11: CLOSING / CTA ── */
+    #slide-11 { text-align: center; }
+
+    #slide-11 h2 {
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      margin-bottom: 1.2rem;
+    }
+
+    .cta-metrics {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      margin: 2.5rem 0;
+    }
+
+    .cta-metric { text-align: center; }
+    .cta-value { font-size: 2.4rem; font-weight: 900; }
+    .cta-metric:nth-child(1) .cta-value { color: var(--mint); }
+    .cta-metric:nth-child(2) .cta-value { color: var(--indigo-light); }
+    .cta-metric:nth-child(3) .cta-value { color: var(--amber); }
+    .cta-label { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem; max-width: 120px; line-height: 1.4; }
+
+    .cta-tagline {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 560px;
+      margin: 0 auto 2rem;
+      line-height: 1.7;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: linear-gradient(135deg, var(--indigo-dark), var(--indigo));
+      border: none;
+      border-radius: 14px;
+      padding: 0.9rem 2rem;
+      color: white;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 32px rgba(108,99,255,0.3);
+    }
+
+    .cta-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(108,99,255,0.4); }
+
+    /* ── SLIDE NUMBER BADGE ── */
+    .slide-num {
+      position: fixed;
+      top: 1.5rem;
+      right: 2rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      z-index: 1000;
+      font-weight: 500;
+    }
+
+    /* ── PROGRESS BAR ── */
+    .progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--indigo), var(--mint));
+      z-index: 1000;
+      transition: width 0.4s ease;
+    }
+
+    /* ── KEYBOARD HINT ── */
+    .key-hint {
+      position: fixed;
+      top: 1.5rem;
+      left: 2rem;
+      font-size: 0.7rem;
+      color: rgba(136,153,187,0.4);
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar" style="width:9.09%"></div>
+<div class="slide-num" id="slideNum">1 / 11</div>
+<div class="key-hint">← → arrow keys to navigate</div>
+
+<!-- ═══════════════════════════════════════
+     SLIDE 1 — COVER
+═══════════════════════════════════════ -->
+<div class="deck">
+<div class="slide active" id="slide-1">
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="cover-badge">
+    <div class="live-dot"></div>
+    SahAI for Shiksha Hackathon &nbsp;·&nbsp; Phase 1 Submission
+  </div>
+  <h1 class="grad-text">SahAI<br/>for Shiksha</h1>
+  <p class="cover-sub">
+    Replacing rote memorization with Socratic AI-mentored learning —<br/>
+    and redefining how we measure a student's worth.
+  </p>
+  <p class="cover-team">Team Submission &nbsp;·&nbsp; June 2026 &nbsp;·&nbsp; Hackathon Grand Finale, Delhi</p>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SLIDE 2 — THE PROBLEM
+═══════════════════════════════════════ -->
+<div class="slide" id="slide-2">
+  <div class="slide-label">The Problem</div>
+  <h2>India's classrooms are<br/><span class="coral-text">teaching the wrong things</span><br/>the wrong way.</h2>
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="problem-stat">95%</div>
+      <div class="problem-label">of classroom time spent on<br/>memorisation, not thinking</div>
+    </div>
+    <div class="problem-card">
+      <div class="problem-stat">1 teacher</div>
+      <div class="problem-label">for every 30+ students —<br/>zero time for personalised support</div>
+    </div>
+    <div class="problem-card">
+      <div class="problem-stat">0 tracking</div>
+      <div class="problem-label">of emotional, social, or mental<br/>well-being alongside academics</div>
+    </div>
+    <div class="problem-card">
+      <div class="problem-stat">"Wrong."</div>
+      <div class="problem-label">the only feedback most students<br/>get — crushing curiosity, not building it</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SLIDE 3 — VISION
+═══════════════════════════════════════ -->
+<div class="slide" id="slide-3">
+  <div class="slide-label">Our Vision</div>
+  <h2 class="grad-text">Cyber-Pedagogy.<br/>The classroom of 2030,<br/>built today.</h2>
+  <p class="vision-quote">
+    "To transform classrooms from hubs of rote memorisation into active environments of <em>guided problem-solving</em> — equipping students with critical thinking, collaboration, and real-world skills through an interactive, AI-mentored platform."
+  </p>
+  <p class="body-text" style="text-align:center;margin:0 auto;">
+    Starting with a web MVP. Scaling to mobile. Changing classrooms across India.
+  </p>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SLIDE 4 — HOW IT WORKS
+═══════════════════════════════════════ -->
+<div class="slide" id="slide-4">
+  <div class="slide-label">The Core Engine</div>
+  <h2>How the <span class="grad-text">Socratic Loop</span> works</h2>
+  <div class="flow-steps">
+    <div class="flow-step">
+      <div class="flow-arrow">→</div>
+      <div class="step-num">STEP 01</div>
+      <div class="step-icon">🌍</div>
+      <div class="step-title">Scenario Injection</div>
+      <div class="step-desc">A real-world challenge is presented — "Design a water filter for a village facing drought."</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-arrow">→</div>
+      <div class="step-num">STEP 02</div>
+      <div class="step-icon">💬</div>
+      <div class="step-title">Student Proposes</div>
+      <div class="step-desc">Student answers in free-form text. The AI parses reasoning, not just the answer.</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-arrow">→</div>
+      <div class="step-num">STEP 03</div>
+      <div class="step-icon">🧩</div>
+      <div class="step-title">Socratic Decomposition</div>
+      <div class="step-desc">Wrong? Instead of "Incorrect" — the AI breaks it into a simpler sub-question to guide them there.</div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">STEP 04</div>
+      <div class="step-icon">📈</div>
+      <div class="step-title">Adaptive Scaffolding</div>
+      <div class="step-desc">Difficulty, hints, and context adapt in real-time based on the student's confidence and history.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SLIDE 5 — THREE PILLARS
+═══════════════════════════════════════ -->
+<div class="slide" id="slide-5">
+  <div class="slide-label">The Platform</div>
+  <h2>Built on <span class="grad-text">three pillars</span></h2>
+  <div class="pillars-grid">
+    <div class="pillar-card p1">
+      <div class="pillar-icon">🤖</div>
+      <div class="pillar-title">Socratic AI Mentor</div>
+      <div class="pillar-desc">
+        Replaces "right/wrong" with guided problem decomposition. Adapts challenge contexts to each student's interests — sports, space, art, gaming. Never gives the answer. Always scaffolds the path.
+      </div>
+    </div>
+    <div class="pillar-card p2">
+      <div class="pillar-icon">🌱</div>
+      <div class="pillar-title">Holistic Growth Tracker</div>
+      <div class="pillar-desc">
+        A multi-dimensional radar chart tracking Academic Mastery, Critical Thinking, Perseverance, Collaboration, and Creative Problem Solving — replacing a single test score with a growth vector.
+      </div>
+    </div>
+    <div class="pillar-card p3">
+      <div class="pillar-icon">🧑‍🏫</div>
+      <div class="pillar-title">Teacher Intelligence Cockpit</div>
+      <div class="pillar-desc">
+        Real-time class map. Concept gap analysis. Holistic support alerts — emotional, social, academic — so teachers can act as mentors, not just graders. Zero extra admin load.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SLIDE 6 — STUDENT EXPERIENCE
+═══════════════════════════════════════ -->
+<div class="slide" id="slide-6">
+  <div class="slide-label">Student View</div>
+  <h2>A student interface that <span class="grad-text">never says "Wrong."</span></h2>
+  <div class="two-col">
+    <div class="chat-mockup">
+      <div class="cm-bar">
+        <div class="cm-dot" style="background:#FF5F57"></div>
+        <div class="cm-dot" style="background:#FFBD2E"></div>
+        <div class="cm-dot" style="background:#28CA40"></div>
+      </div>
+      <div class="cm-msg cm-ai">
+        <strong>🤖 SahAI Mentor</strong><br/>
+        A village of 500 people needs safe water. Design a low-cost filtration system. What's your <em>first step</em>?
+      </div>
+      <div class="cm-msg cm-student">
+        I think we should calculate how much water the village needs first.
+      </div>
+      <div class="cm-hint">
+        ✅ Excellent! Capacity-first thinking — that's engineering. +30 XP<br/>
+        <em style="font-size:0.7rem;opacity:0.7">If 1 person needs 3L/day, how much does the village need?</em>
+      </div>
+    </div>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">🎯</div>
+        <div>Real-world scenario challenges replace abstract textbook problems</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🧠</div>
+        <div>AI decomposes wrong answers into simpler sub-questions — no "Incorrect"</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📊</div>
+        <div>Live radar chart shows growth across 5 holistic dimensions</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🌍</div>
+        <div>Challenge contexts adapt to each student's interests (sports, space, art)</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📶</div>
+        <div>Offline-first — works on low-spec Chromebooks with no internet</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SLIDE 7 — TEACHER COCKPIT
+═══════════════════════════════════════ -->
+<div class="slide" id="slide-7">
+  <div class="slide-label">Teacher View</div>
+  <h2>A cockpit that <span class="grad-text">saves 2+ hours</span><br/>of admin every week</h2>
+  <div class="cockpit-preview">
+    <div class="cockpit-card">
+      <div class="ck-title">📍 Real-time Class Map</div>
+      <div class="student-dots">
+        <div class="sdot t"></div><div class="sdot t"></div><div class="sdot a"></div><div class="sdot t"></div><div class="sdot t"></div>
+        <div class="sdot s"></div><div class="sdot t"></div><div class="sdot a"></div><div class="sdot t"></div><div class="sdot s"></div>
+        <div class="sdot t"></div><div class="sdot a"></div><div class="sdot t"></div><div class="sdot t"></div><div class="sdot a"></div>
+        <div class="sdot t"></div><div class="sdot s"></div><div class="sdot t"></div><div class="sdot t"></div><div class="sdot a"></div>
+        <div class="sdot a"></div><div class="sdot t"></div><div class="sdot t"></div><div class="sdot s"></div><div class="sdot t"></div>
+      </div>
+      <div style="display:flex;gap:0.7rem;margin-top:0.8rem;flex-wrap:wrap;">
+        <span style="font-size:0.65rem;color:var(--mint)">🟢 16 Thriving</span>
+        <span style="font-size:0.65rem;color:var(--amber)">🟡 8 Attention</span>
+        <span style="font-size:0.65rem;color:var(--coral)">🔴 4 Stuck</span>
+      </div>
+    </div>
+    <div class="cockpit-card">
+      <div class="ck-title">📉 Concept Gap Analysis</div>
+      <div class="gap-bar-item">
+        <div class="gap-name"><span>Inverse Square Law</span><span style="color:var(--coral)">60%</span></div>
+        <div class="gap-track"><div class="gap-fill" style="width:60%;background:linear-gradient(90deg,var(--coral),#FF9A9A)"></div></div>
+      </div>
+      <div class="gap-bar-item">
+        <div class="gap-name"><span>Fractional Division</span><span style="color:var(--coral)">45%</span></div>
+        <div class="gap-track"><div class="gap-fill" style="width:45%;background:linear-gradient(90deg,var(--coral),#FF9A9A)"></div></div>
+      </div>
+      <div class="gap-bar-item">
+        <div class="gap-name"><span>Particle Filtration</span><span style="color:var(--amber)">38%</span></div>
+        <div class="gap-track"><div class="gap-fill" style="width:38%;background:linear-gradient(90deg,var(--amber),#FFD47A)"></div></div>
+      </div>
+      <div class="gap-bar-item">
+        <div class="gap-name"><span>Volume & Capacity</span><span style="color:var(--indigo-light)">22%</span></div>
+        <div class="gap-track"><div class="gap-fill" style="width:22%;background:linear-gradient(90deg,var(--indigo),var(--indigo-light))"></div></div>
+      </div>
+    </div>
+    <div class="cockpit-card">
+      <div class="ck-title">💬 Support Feed</div>
+      <div class="alert-item u">🚨 Vaibhav's collaboration dropped 18%. Recommend 1-on-1 check-in.</div>
+      <div class="alert-item w">⚠️ Sahil stuck 5 attempts — AI scaffolding exhausted.</div>
+      <div class="alert-item p">🌟 Aarya earned "Deep Thinker" badge independently!</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SLIDE 8 — DIFFERENTIATORS
+═══════════════════════════════════════ -->
+<div class="slide" id="slide-8">
+  <div class="slide-label">Why We Win</div>
+  <h2>Unfair advantages no one<br/><span class="grad-text">else has built yet</span></h2>
+  <div class="diff-grid">
+    <div class="diff-card">
+      <div class="diff-icon">🧩</div>
+      <div>
+        <div class="diff-title">Socratic Decomposition Engine</div>
+        <div class="diff-desc">Errors don't end the session — they start a guided sub-question cascade. Students learn from mistakes instead of being penalised for them.</div>
+        <div class="vs-badge">vs. Every LMS that shows "Incorrect. Try again."</div>
+      </div>
+    </div>
+    <div class="diff-card">
+      <div class="diff-icon">🌱</div>
+      <div>
+        <div class="diff-title">Holistic Evaluation — Not Just Marks</div>
+        <div class="diff-desc">Tracks Grit, Collaboration, Creativity, and Critical Thinking alongside academic mastery. A student's worth is never a single number.</div>
+        <div class="vs-badge">vs. Every platform that shows only test scores</div>
+      </div>
+    </div>
+    <div class="diff-card">
+      <div class="diff-icon">🧑‍🤝‍🧑</div>
+      <div>
+        <div class="diff-title">Dynamic Team Role Assignment</div>
+        <div class="diff-desc">Group challenges assign psychology-driven roles: Architect, Researcher, Communicator, Debugger — building social-emotional intelligence systematically.</div>
+        <div class="vs-badge">vs. Unstructured "group work" with no accountability</div>
+      </div>
+    </div>
+    <div class="diff-card">
+      <div class="diff-icon">📶</div>
+      <div>
+        <div class="diff-title">Offline-First for Real India</div>
+        <div class="diff-desc">Built for schools with unreliable Wi-Fi. LocalStorage + IndexedDB caching means students never lose progress. Runs on cheap Chromebooks.</div>
+        <div class="vs-badge">vs. Cloud-dependent tools that fail in rural schools</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SLIDE 9 — TECH STACK
+═══════════════════════════════════════ -->
+<div class="slide" id="slide-9">
+  <div class="slide-label">Under the Hood</div>
+  <h2>Built for <span class="grad-text">real classrooms,</span><br/>not ideal ones</h2>
+  <div class="arch-grid">
+    <div class="arch-section">
+      <div class="arch-section-title">Tech Stack — Phase 1 MVP</div>
+      <div>
+        <span class="tech-tag">🌐 HTML5 + Vanilla JS</span>
+        <span class="tech-tag">🎨 Glassmorphism CSS</span>
+        <span class="tech-tag">📊 Canvas Radar Charts</span>
+        <span class="tech-tag">💾 LocalStorage / IndexedDB</span>
+        <span class="tech-tag">🤖 Rule-based Socratic Tree</span>
+        <span class="tech-tag">📱 Responsive Design</span>
+        <span class="tech-tag">♿ WCAG AA Color Contrast</span>
+        <span class="tech-tag">⚡ Zero external dependencies</span>
+      </div>
+      <div class="arch-section-title" style="margin-top:1.2rem;">Future Stack — Phase 2+</div>
+      <div>
+        <span class="tech-tag">🧠 ML Concept Profiling Engine</span>
+        <span class="tech-tag">🔗 LLM Integration (on-device)</span>
+        <span class="tech-tag">📱 React Native Mobile App</span>
+        <span class="tech-tag">☁️ Sync-on-connect Backend</span>
+      </div>
+    </div>
+    <div class="arch-section">
+      <div class="arch-section-title">Design Constraints (Real India)</div>
+      <div class="constraint-item"><div class="c-icon">📶</div><div><strong>Offline-first:</strong> Full functionality with zero internet. Syncs when connected.</div></div>
+      <div class="constraint-item"><div class="c-icon">💻</div><div><strong>Low-spec hardware:</strong> SVG vectors, no heavy libraries, hardware-accelerated animations only.</div></div>
+      <div class="constraint-item"><div class="c-icon">🔒</div><div><strong>Privacy:</strong> Student emotional/mental data encrypted, visible only to their teacher.</div></div>
+      <div class="constraint-item"><div class="c-icon">♿</div><div><strong>Accessibility:</strong> ARIA labels, high-contrast mode, keyboard navigation throughout.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SLIDE 10 — ROADMAP
+═══════════════════════════════════════ -->
+<div class="slide" id="slide-10">
+  <div class="slide-label">Roadmap</div>
+  <h2>From hackathon to<br/><span class="grad-text">national impact</span></h2>
+  <div class="roadmap-timeline">
+    <div class="timeline-item">
+      <div class="tl-node done">✓</div>
+      <div class="tl-content">
+        <div class="tl-date">Completed · May 2026</div>
+        <div class="tl-title">Product Discovery & Design</div>
+        <div class="tl-desc">Vision, user profiles, feature specs, UX design system, and prototype screens completed.</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-node now">📍</div>
+      <div class="tl-content">
+        <div class="tl-date">Due 3 June 2026 <span class="now-badge">← NOW</span></div>
+        <div class="tl-title">Phase 1 — Clickable Prototype + Pitch Deck</div>
+        <div class="tl-desc">Clickable high-fidelity prototype, presentation deck, and walkthrough video submitted.</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-node next">🚀</div>
+      <div class="tl-content">
+        <div class="tl-date">Due 20 June 2026</div>
+        <div class="tl-title">Phase 2 — Functional MVP</div>
+        <div class="tl-desc">Full offline-first web app with real Socratic AI engine, teacher cockpit, and live hosted URL on GitHub.</div>
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-node future">🏆</div>
+      <div class="tl-content">
+        <div class="tl-date">3 July 2026 · Delhi</div>
+        <div class="tl-title">Grand Finale — Live Pitch & Demo</div>
+        <div class="tl-desc">Live demonstration before jury. Full functional MVP + deployment plan + future roadmap presented.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SLIDE 11 — CLOSING / CTA
+═══════════════════════════════════════ -->
+<div class="slide" id="slide-11">
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="slide-label">The Ask</div>
+  <h2><span class="grad-text">Every student deserves<br/>a mentor, not just a mark.</span></h2>
+  <div class="cta-metrics">
+    <div class="cta-metric">
+      <div class="cta-value">&lt;15s</div>
+      <div class="cta-label">Time to "Aha" moment in demo</div>
+    </div>
+    <div class="cta-metric">
+      <div class="cta-value">&gt;80%</div>
+      <div class="cta-label">Target voluntary challenge completion rate</div>
+    </div>
+    <div class="cta-metric">
+      <div class="cta-value">2h+</div>
+      <div class="cta-label">Teacher admin time saved per week</div>
+    </div>
+  </div>
+  <p class="cta-tagline">
+    SahAI for Shiksha isn't just a learning app — it's a paradigm shift. From marks to mastery. From grades to growth. From one-size-fits-all to every student, seen.
+  </p>
+  <a href="student.html" class="cta-btn" id="try-demo-btn">Try the Live Prototype →</a>
+</div>
+
+</div><!-- /deck -->
+
+<!-- NAV BAR -->
+<div class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="navigate(-1)" disabled>←</button>
+  <div class="nav-dots" id="navDots"></div>
+  <div class="slide-counter" id="slideCounter">1 / 11</div>
+  <button class="nav-btn" id="nextBtn" onclick="navigate(1)">→</button>
+</div>
+
+<script>
+  const TOTAL = 11;
+  let current = 1;
+
+  // Build nav dots
+  const dotsEl = document.getElementById('navDots');
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement('div');
+    d.className = 'nav-dot' + (i === 1 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function navigate(dir) {
+    goTo(current + dir);
+  }
+
+  function goTo(n) {
+    if (n < 1 || n > TOTAL) return;
+    const prev = document.getElementById('slide-' + current);
+    prev.classList.remove('active');
+    prev.classList.add('exit');
+    setTimeout(() => prev.classList.remove('exit'), 500);
+
+    current = n;
+    const next = document.getElementById('slide-' + current);
+    next.classList.add('active');
+
+    // Update dots
+    document.querySelectorAll('.nav-dot').forEach((d, i) => {
+      d.classList.toggle('active', i + 1 === current);
+    });
+
+    // Update counter
+    document.getElementById('slideCounter').textContent = current + ' / ' + TOTAL;
+    document.getElementById('slideNum').textContent = current + ' / ' + TOTAL;
+
+    // Update progress bar
+    document.getElementById('progressBar').style.width = (current / TOTAL * 100) + '%';
+
+    // Update buttons
+    document.getElementById('prevBtn').disabled = current === 1;
+    document.getElementById('nextBtn').disabled = current === TOTAL;
+  }
+
+  // Keyboard nav
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') navigate(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') navigate(-1);
+  });
+
+  // Swipe support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) navigate(dx < 0 ? 1 : -1);
+  });
+</script>
+</body>
+</html>
