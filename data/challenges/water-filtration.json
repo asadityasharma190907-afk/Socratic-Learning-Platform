@@ -1,0 +1,109 @@
+{
+  "challenges": {
+    "water-filtration": {
+      "title": "Rainwater Harvesting Design Challenge",
+      "max_steps": 4,
+      "states": {
+        "direct_connection_dust": {
+          "initial_question": {
+            "text": "A lovely start, beta! The rooftop collects the rain, and it flows straight to the well. But think about the very first heavy rain of the monsoon. It washes off all the dry summer dust and leaves from the roof. If the water flows straight down, where will all that dust go?",
+            "chips": ["It will go straight into our drinking well!", "It will get filtered automatically by earth."]
+          },
+          "steps": [
+            {
+              "step_num": 1,
+              "keywords": ["well", "drinking", "dirty", "dust", "1"],
+              "question": "Let's imagine you are washing an apple covered in mud. If you eat the first muddy water splash from washing it, what are you drinking?",
+              "chips": ["Muddy, dirty water!", "Clean water."]
+            },
+            {
+              "step_num": 2,
+              "keywords": ["muddy", "dirty", "dust", "wash"],
+              "question": "Right! We want to separate the muddy water from the clean inside. In our village, how can we make sure we discard the first dirty splash of the roof?",
+              "chips": ["Bypass/throw away the first splash", "Let it mix into the well"]
+            },
+            {
+              "step_num": 3,
+              "keywords": ["bypass", "throw", "divert", "first"],
+              "question": "Excellent! That's what the First-Flush Diverter does. It acts like throwing away the first dirty water. Shall we add it to Step 2?",
+              "chips": ["Yes, add First-Flush Diverter to Step 2", "No, keep direct connection"]
+            },
+            {
+              "step_num": 4,
+              "keywords": ["yes", "diverter", "add"],
+              "question": "Wonderful, beta! Placing the First-Flush Diverter in Step 2 will protect our drinking well from that first dusty wash. Let's adjust our canvas!",
+              "chips": ["I'll add it now!"]
+            }
+          ],
+          "fallback_visual_description": "Let's trace the water flow visually: Rooftop Collector (Step 1) -> First-Flush Diverter (Step 2) -> Sand/Gravel Filter (Step 3) -> Recharge Well (Step 4). Placing them in this sequence ensures that dirty first rain is diverted, silt is filtered, and clean water enters the well."
+        },
+        "first_flush_divert": {
+          "initial_question": {
+            "text": "You layered a filter! That will catch silt. But think: if the heavy dust, mud, and dry leaves from the very first rain hit the filter immediately, won't our local filter get clogged up on day one? How can we avoid that first muddy wave?",
+            "chips": ["Add a First-Flush Diverter to bypass it", "Just clean the filter daily"]
+          },
+          "steps": [
+            {
+              "step_num": 1,
+              "keywords": ["diverter", "first", "bypass", "add"],
+              "question": "Imagine we have a small tea strainer. If we throw a handful of mud and dry leaves into it first, what happens to the tiny holes?",
+              "chips": ["They get completely clogged up!", "They remain clean."]
+            },
+            {
+              "step_num": 2,
+              "keywords": ["clogged", "blocked", "stopped"],
+              "question": "Exactly! It gets blocked. So to protect our fine strainer, we must first divert the big mud chunk. Which component can bypass the first mud splash?",
+              "chips": ["The First-Flush Diverter", "A standard pipe"]
+            },
+            {
+              "step_num": 3,
+              "keywords": ["diverter", "flush", "first"],
+              "question": "Yes, the First-Flush Diverter! If we place it in Step 2, it intercepts the initial muddy wash and protects our filter. Ready to place it?",
+              "chips": ["Yes, let's place it in Step 2!", "No, keep it as is"]
+            },
+            {
+              "step_num": 4,
+              "keywords": ["yes", "place"],
+              "question": "Brilliant, beta! Add the First-Flush Diverter in Step 2 to protect the Sand/Gravel Filter in Step 3. Let's do it!",
+              "chips": ["Got it, let's update!"]
+            }
+          ],
+          "fallback_visual_description": "To protect your filter from clogging: sequence the water from Rooftop Collector (Step 1) -> First-Flush Diverter (Step 2) -> Sand/Gravel Filter (Step 3) -> Recharge Well (Step 4). The diverter takes the heavy mud brunt, keeping the filter clean!"
+        },
+        "budget_filter_choice": {
+          "initial_question": {
+            "text": "A very clean membrane filter indeed, beta! But look at the budget indicator: we spent a huge chunk! Membrane filters cost a lot to replace, and the village school has low funds. What natural, local materials could we layer in Step 3 instead to keep it extremely cheap but efficient?",
+            "chips": ["Replace it with the Sand/Gravel Filter", "Keep the expensive membrane"]
+          },
+          "steps": [
+            {
+              "step_num": 1,
+              "keywords": ["replace", "sand", "gravel", "local"],
+              "question": "If we need to filter water in a village but can't buy expensive fancy plastic filters, what clean materials does Mother Earth give us under our feet?",
+              "chips": ["Sand, gravel, and charcoal!", "Plastic membranes."]
+            },
+            {
+              "step_num": 2,
+              "keywords": ["sand", "gravel", "earth", "charcoal"],
+              "question": "Indeed! Sand and gravel can filter water beautifully. Why pay so much when sand and stones from our riverbed are free? Let's use local Sand/Gravel Filter!",
+              "chips": ["Use local Sand/Gravel Filter", "Keep membrane filter"]
+            },
+            {
+              "step_num": 3,
+              "keywords": ["use", "sand", "gravel"],
+              "question": "Let's change our Step 3 to Sand/Gravel Filter to save our precious budget. Sound like a plan, beta?",
+              "chips": ["Yes, change it to Sand/Gravel Filter!", "No, I like the expensive filter"]
+            },
+            {
+              "step_num": 4,
+              "keywords": ["yes", "change"],
+              "question": "Brilliant! Changing Step 3 to Sand/Gravel Filter cuts the initial setup and maintenance costs, making our system highly sustainable!",
+              "chips": ["Excellent, let's change!"]
+            }
+          ],
+          "fallback_visual_description": "For high cost-efficiency and local sustainability: replace the Membrane Filter in Step 3 with the Sand/Gravel Filter. This matches the EVS constraint of utilizing simple, local materials that village schools can easily maintain."
+        }
+      }
+    }
+  }
+}

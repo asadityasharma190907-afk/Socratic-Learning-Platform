@@ -1223,6 +1223,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/dexie@4.4.2/dist/dexie.min.js"></script>
 <script src="js/db.js"></script>
+<script src="js/chat.js"></script>
 <script>
   // ── STATE VARIABLES ──
   let studentXp = 1240;
@@ -1513,112 +1514,13 @@
     }
   }
 
-  // ── SOCRATIC ENGINE VALIDATION ──
-  let currentDialogPhase = 0; 
-  let socraticState = null; 
-
+  // ── SOCRATIC ENGINE VALIDATION (Delegated to SocraticChatEngine in js/chat.js) ──
   function validateDesign() {
-    // 1. Check if slots are filled
-    const intake = pipeline[0];
-    const divert = pipeline[1];
-    const filter = pipeline[2];
-    const recharge = pipeline[3];
-
-    showTyping();
-
-    setTimeout(() => {
-      hideTyping();
-
-      // Case: Empty Setup
-      if (!intake && !divert && !filter && !recharge) {
-        addAIBubble({
-          type: 'hint',
-          text: "Let's put our heads together, beta! Place the Rooftop Collector in Step 1 to start capturing the rainfall!"
-        });
-        return;
-      }
-
-      // Case: Direct Connection (No filter, no diverter)
-      if (intake && recharge && !divert && !filter) {
-        updateSocraticProgress(1);
-        saveLayout();
-        setMascotState('hint');
-        addAIBubble({
-          type: 'hint',
-          text: "A lovely start, beta! The rooftop collects the rain, and it flows straight to the well. But think about the very first heavy rain of the monsoon. It washes off all the dry summer dust and leaves from the roof. If the water flows straight down, where will all that dust go?",
-          chips: ["It will go straight into our drinking well!", "It will get filtered automatically by earth."]
-        });
-        socraticState = 'direct_connection_dust';
-        return;
-      }
-
-      // Case: No first flush diverter placed (but filter is placed)
-      if (intake && filter && recharge && !divert) {
-        updateSocraticProgress(2);
-        saveLayout();
-        setMascotState('hint');
-        addAIBubble({
-          type: 'hint',
-          text: "You layered a filter! That will catch silt. But think: if the heavy dust, mud, and dry leaves from the very first rain hit the filter immediately, won't our local filter get clogged up on day one? How can we avoid that first muddy wave?",
-          chips: ["Add a First-Flush Diverter to bypass it", "Just clean the filter daily"]
-        });
-        socraticState = 'first_flush_divert';
-        return;
-      }
-
-      // Case: High tech membrane filter used (Budget crash check)
-      if (intake && divert && filter && filter.id === 'comp-membrane') {
-        updateSocraticProgress(2);
-        saveLayout();
-        setMascotState('hint');
-        addAIBubble({
-          type: 'hint',
-          text: "A very clean membrane filter indeed, beta! But look at the budget indicator: we spent a huge chunk! Membrane filters cost a lot to replace, and the village school has low funds. What natural, local materials could we layer in Step 3 instead to keep it extremely cheap but efficient?",
-          chips: ["Replace it with the Sand/Gravel Filter", "Keep the expensive membrane"]
-        });
-        socraticState = 'budget_filter_choice';
-        return;
-      }
-
-      // Case: Correct configuration (Rooftop + Diverter + Sand/Gravel + Well)
-      if (intake && intake.id === 'comp-rooftop' &&
-          divert && (divert.id === 'comp-diverter' || divert.id === 'comp-first-flush') &&
-          filter && (filter.id === 'comp-filter' || filter.id === 'comp-filter-chamber') &&
-          recharge && (recharge.id === 'comp-well' || recharge.id === 'comp-recharge-well')) {
-        
-        updateSocraticProgress(3);
-        saveLayout();
-        setMascotState('success');
-        addFeedbackBanner("✅ Congratulations! System Designed Successfully!");
-        
-        addAIBubble({
-          type: 'decompose',
-          text: "<strong>Incredible work, beta! 🏮✨</strong> You have designed a flawless, low-cost rainwater harvesting recharge system for the village! You bypassed the initial dust, filtered the silt with sand and gravel, and safely recharged the groundwater.<br/><br/>You have mastered **Hydrology & Infrastructure Planning**! +150 XP!"
-        });
-
-        // Award rewards
-        awardXP(150);
-        document.getElementById('badge-resilience').classList.remove('locked');
-        document.getElementById('step-2-item').className = 'step-item done';
-        document.getElementById('step-2-item').querySelector('.step-indicator').textContent = '✓';
-        document.getElementById('step-3-item').className = 'step-item active';
-
-        // Update skill metrics inline
-        skillData[0] = 92; // Hydrology up
-        skillData[1] = 84; // Critical up
-        skillData[2] = 98; // Perseverance up
-        animFrame = 0;
-        animateRadar();
-        return;
-      }
-
-      // Fallback
-      addAIBubble({
-        type: 'hint',
-        text: "You are experimental, beta! Let's trace the water: it must flow from Rooftop (Step 1) -> First-Flush (Step 2) -> Sand/Gravel Filter (Step 3) -> Recharge Well (Step 4) to ensure absolute purity and cost efficiency. Give that sequence a shot!"
-      });
-
-    }, 1500);
+    if (window.socraticEngine) {
+      window.socraticEngine.evaluateDesign(pipeline);
+    } else {
+      console.error("SocraticChatEngine not loaded yet.");
+    }
   }
 
   function handleKey(e) {
@@ -1633,56 +1535,22 @@
     const text = input.value.trim();
     if (!text) return;
 
-    addStudentBubble(text);
     input.value = '';
 
-    showTyping();
-
-    setTimeout(() => {
-      hideTyping();
-
-      // Socratic Response Flow
-      if (socraticState === 'direct_connection_dust') {
-        if (text.includes("drinking well") || text.includes("1")) {
-          addAIBubble({
-            type: 'decompose',
-            text: "Exactly, beta! The dusty runoff would ruin the clean village groundwater. That's why we need a way to bypass the first flush of rain. Try placing the <strong>First-Flush Diverter</strong> in Step 2 to solve this!"
-          });
-        } else {
-          addAIBubble({
-            type: 'hint',
-            text: "Think again, beta! Dust and debris washed from the dry roof will settle down in the well water. How can we bypass that very first dirty splash of rain?"
-          });
-        }
-        socraticState = null;
-        return;
-      }
-
-      if (socraticState === 'first_flush_divert') {
+    if (window.socraticEngine) {
+      window.socraticEngine.handleStudentMessage(text);
+    } else {
+      // Fallback if not loaded
+      addStudentBubble(text);
+      showTyping();
+      setTimeout(() => {
+        hideTyping();
         addAIBubble({
-          type: 'decompose',
-          text: "Correct! The First-Flush Diverter will wash the dust aside. Try placing it in Step 2 so only the cleaner water gets to our filter!"
+          type: 'hint',
+          text: "Socratic Chat Engine is starting up, beta! Just a moment."
         });
-        socraticState = null;
-        return;
-      }
-
-      if (socraticState === 'budget_filter_choice') {
-        addAIBubble({
-          type: 'decompose',
-          text: "Spot on! Replacing it with a low-cost <strong>Sand/Gravel Filter</strong> cuts the initial setup and maintenance costs, making our system highly sustainable!"
-        });
-        socraticState = null;
-        return;
-      }
-
-      // General fallback reply
-      addAIBubble({
-        type: 'hint',
-        text: "I hear your thinking, beta! Every attempt teaches us how water behaves. Make adjustments on our visual canvas above and hit 'Test My Design' to see Sparky evaluate it!"
-      });
-
-    }, 1500);
+      }, 500);
+    }
   }
 
   function requestHint() {
