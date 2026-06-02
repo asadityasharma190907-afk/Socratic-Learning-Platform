@@ -1214,6 +1214,16 @@
   </div>
 </div>
 
+<!-- Self-Reflection Modal (Story 2.4) -->
+<div id="modal-self-reflect" style="display:none; position:fixed; inset:0; background:rgba(17, 24, 39, 0.7); backdrop-filter:blur(12px); z-index:1000; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease;">
+  <div style="background:var(--slate-800); border:1px solid var(--indigo-border); border-radius:16px; padding:2rem; width:90%; max-width:400px; box-shadow:0 10px 30px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:1rem;">
+    <h3 style="color:var(--white); font-size:1.2rem; display:flex; align-items:center; gap:0.5rem; font-family:'Outfit', sans-serif;"><span>🧠</span> Time to Reflect</h3>
+    <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.5;">You've requested several hints! To unlock more hints, take a moment to reflect on what you've tried so far. (Min 10 characters)</p>
+    <textarea id="reflection-input" placeholder="I noticed that when I placed..." style="background:rgba(11, 15, 25, 0.5); border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:0.75rem; color:var(--white); font-family:'Inter', sans-serif; font-size:0.85rem; resize:none; min-height:80px; outline:none; transition:border-color 0.2s;" oninput="document.getElementById('btn-unlock-hints').disabled = this.value.length < 10; document.getElementById('btn-unlock-hints').style.opacity = this.value.length < 10 ? '0.5' : '1';"></textarea>
+    <button id="btn-unlock-hints" disabled style="background:linear-gradient(135deg, var(--indigo), var(--indigo-light)); border:none; border-radius:8px; padding:0.75rem; color:white; font-family:'Outfit', sans-serif; font-weight:600; cursor:pointer; opacity:0.5; transition:all 0.2s;" onclick="submitReflection()">Unlock Hints</button>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/dexie@4.4.2/dist/dexie.min.js"></script>
 <script src="js/db.js"></script>
 <script src="js/chat.js"></script>
@@ -1547,15 +1557,20 @@
   }
 
   function requestHint() {
-    showTyping();
-    setMascotState('hint');
-    setTimeout(() => {
-      hideTyping();
-      addAIBubble({
-        type: 'hint',
-        text: "A gentle nudge, beta! 💡 The water should pass through a filter of sand and gravel before entering the recharge well. Make sure you place the <strong>Sand/Gravel Filter</strong> in Step 3!"
-      });
-    }, 1000);
+    if (window.socraticEngine) {
+      window.socraticEngine.requestHint();
+    }
+  }
+
+  function submitReflection() {
+    const input = document.getElementById('reflection-input');
+    const text = input.value.trim();
+    if (text.length >= 10 && window.socraticEngine) {
+      window.socraticEngine.submitReflection(text);
+      input.value = '';
+      document.getElementById('btn-unlock-hints').disabled = true;
+      document.getElementById('btn-unlock-hints').style.opacity = '0.5';
+    }
   }
 
   function addStudentBubble(text) {

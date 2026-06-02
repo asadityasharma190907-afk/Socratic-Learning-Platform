@@ -138,7 +138,8 @@ class SocraticChatEngine {
       activeTree: null,
       stepIndex: 0,
       questionCount: 0,
-      language: 'en'
+      language: 'en',
+      hintCounter: 0
     }, {
       set: (target, prop, value) => {
         const oldVal = target[prop];
@@ -509,6 +510,50 @@ class SocraticChatEngine {
         }
       }
     }, delay);
+  }
+
+  requestHint() {
+    this.state.hintCounter++;
+    
+    if (this.state.hintCounter >= 8) {
+      const modal = document.getElementById('modal-self-reflect');
+      if (modal) {
+        modal.style.display = 'flex';
+        // force reflow
+        void modal.offsetWidth;
+        modal.style.opacity = '1';
+      }
+      return;
+    }
+
+    this.showTypingIndicator();
+    if (window.setMascotState) window.setMascotState('hint');
+    
+    setTimeout(() => {
+      this.hideTypingIndicator();
+      this.addAIBubble({
+        type: 'hint',
+        textEn: "A gentle nudge, beta! 💡 The water should pass through a filter of sand and gravel before entering the recharge well. Make sure you place the <strong>Sand/Gravel Filter</strong> in Step 3!",
+        textHi: "एक हल्का संकेत, बेटा! 💡 पानी को रीचार्ज कुएं में प्रवेश करने से पहले रेत और बजरी के फिल्टर से गुजरना चाहिए। सुनिश्चित करें कि आप <strong>Sand/Gravel Filter</strong> को स्टेप 3 में रखें!"
+      });
+    }, 1000);
+  }
+
+  submitReflection(text) {
+    if (window.queueOutboxAction) {
+      window.queueOutboxAction('student_1', 'SELF_REFLECTION', { text, timestamp: Date.now() });
+    }
+    
+    const modal = document.getElementById('modal-self-reflect');
+    if (modal) {
+      modal.style.opacity = '0';
+      setTimeout(() => {
+        modal.style.display = 'none';
+      }, 300);
+    }
+    
+    this.state.hintCounter = 0;
+    this.requestHint(); 
   }
 
   toggleLanguage(event) {
