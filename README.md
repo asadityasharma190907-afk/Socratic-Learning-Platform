@@ -74,8 +74,8 @@ SahAI for Shiksha is engineered with **zero external dependencies** and requires
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/[your-username]/interactive-learning-platform.git
-   cd interactive-learning-platform
+   git clone https://github.com/asadityasharma190907-afk/Socratic-Learning-Platform.git
+   cd Socratic-Learning-Platform
    ```
 2. Double-click **`index.html`** in any modern web browser to open the main portal.
 3. Select the **Student Portal** or **Teacher Cockpit** to explore the high-fidelity features.
