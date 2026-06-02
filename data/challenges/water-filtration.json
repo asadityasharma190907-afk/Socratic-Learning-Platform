@@ -6,102 +6,120 @@
       "states": {
         "direct_connection_dust": {
           "initial_question": {
-            "text": "A lovely start, beta! The rooftop collects the rain, and it flows straight to the well. But think about the very first heavy rain of the monsoon. It washes off all the dry summer dust and leaves from the roof. If the water flows straight down, where will all that dust go?",
+            "textEn": "A lovely start, beta! The rooftop collects the rain, and it flows straight to the well. But think about the very first heavy rain of the monsoon. It washes off all the dry summer dust and leaves from the roof. If the water flows straight down, where will all that dust go?",
+            "textHi": "बहुत बढ़िया शुरुआत, बेटा! छत बारिश का पानी इकट्ठा करती है, और यह सीधे कुएं में बह जाता है। लेकिन मानसून की पहली भारी बारिश के बारे में सोचें। यह छत से गर्मियों की सारी धूल और सूखे पत्तों को बहा ले जाती है। यदि पानी सीधे नीचे बहता है, तो वह सारी धूल कहाँ जाएगी?",
             "chips": ["It will go straight into our drinking well!", "It will get filtered automatically by earth."]
           },
           "steps": [
             {
               "step_num": 1,
               "keywords": ["well", "drinking", "dirty", "dust", "1"],
-              "question": "Let's imagine you are washing an apple covered in mud. If you eat the first muddy water splash from washing it, what are you drinking?",
+              "questionEn": "Let's imagine you are washing an apple covered in mud. If you eat the first muddy water splash from washing it, what are you drinking?",
+              "questionHi": "जरा सोचिए कि आप कीचड़ से सना हुआ एक सेब धो रहे हैं। यदि आप इसे धोने से निकलने वाला पहला गंदा पानी पीते हैं, तो आप क्या पी रहे हैं?",
               "chips": ["Muddy, dirty water!", "Clean water."]
             },
             {
               "step_num": 2,
               "keywords": ["muddy", "dirty", "dust", "wash"],
-              "question": "Right! We want to separate the muddy water from the clean inside. In our village, how can we make sure we discard the first dirty splash of the roof?",
+              "questionEn": "Right! We want to separate the muddy water from the clean inside. In our village, how can we make sure we discard the first dirty splash of the roof?",
+              "questionHi": "बिल्कुल सही! हम गंदे पानी को अंदर के साफ पानी से अलग करना चाहते हैं। हमारे गांव में, हम यह कैसे सुनिश्चित कर सकते हैं कि छत का पहला गंदा पानी बाहर निकाल दिया जाए?",
               "chips": ["Bypass/throw away the first splash", "Let it mix into the well"]
             },
             {
               "step_num": 3,
               "keywords": ["bypass", "throw", "divert", "first"],
-              "question": "Excellent! That's what the First-Flush Diverter does. It acts like throwing away the first dirty water. Shall we add it to Step 2?",
+              "questionEn": "Excellent! That's what the First-Flush Diverter does. It acts like throwing away the first dirty water. Shall we add it to Step 2?",
+              "questionHi": "शानदार! यही काम फर्स्ट-फ्लश डाइवर्टर (First-Flush Diverter) करता है। यह पहले गंदे पानी को फेंकने जैसा है। क्या हम इसे स्टेप 2 में जोड़ें?",
               "chips": ["Yes, add First-Flush Diverter to Step 2", "No, keep direct connection"]
             },
             {
               "step_num": 4,
               "keywords": ["yes", "diverter", "add"],
-              "question": "Wonderful, beta! Placing the First-Flush Diverter in Step 2 will protect our drinking well from that first dusty wash. Let's adjust our canvas!",
+              "questionEn": "Wonderful, beta! Placing the First-Flush Diverter in Step 2 will protect our drinking well from that first dusty wash. Let's adjust our canvas!",
+              "questionHi": "अद्भुत, बेटा! स्टेप 2 में फर्स्ट-फ्लश डाइवर्टर रखने से हमारा पीने का कुआं उस पहली धूल भरी धुलाई से बच जाएगा। चलिए अपने कैनवास को ठीक करते हैं!",
               "chips": ["I'll add it now!"]
             }
           ],
-          "fallback_visual_description": "Let's trace the water flow visually: Rooftop Collector (Step 1) -> First-Flush Diverter (Step 2) -> Sand/Gravel Filter (Step 3) -> Recharge Well (Step 4). Placing them in this sequence ensures that dirty first rain is diverted, silt is filtered, and clean water enters the well."
+          "fallbackEn": "Let's trace the water flow visually: Rooftop Collector (Step 1) -> First-Flush Diverter (Step 2) -> Sand/Gravel Filter (Step 3) -> Recharge Well (Step 4). Placing them in this sequence ensures that dirty first rain is diverted, silt is filtered, and clean water enters the well.",
+          "fallbackHi": "आइए पानी के बहाव को देखें: रूफटॉप कलेक्टर (स्टेप 1) -> फर्स्ट-फ्लश डाइवर्टर (स्टेप 2) -> रेत/बजरी फिल्टर (स्टेप 3) -> रीचार्ज कुआं (स्टेप 4)। इन्हें इस क्रम में रखने से यह सुनिश्चित होता है कि पहली गंदी बारिश का मार्ग बदल दिया जाता है, गाद को छान लिया जाता है और साफ पानी कुएं में जाता है।"
         },
         "first_flush_divert": {
           "initial_question": {
-            "text": "You layered a filter! That will catch silt. But think: if the heavy dust, mud, and dry leaves from the very first rain hit the filter immediately, won't our local filter get clogged up on day one? How can we avoid that first muddy wave?",
+            "textEn": "You layered a filter! That will catch silt. But think: if the heavy dust, mud, and dry leaves from the very first rain hit the filter immediately, won't our local filter get clogged up on day one? How can we avoid that first muddy wave?",
+            "textHi": "आपने एक फ़िल्टर लगाया है! यह गाद को रोकेगा। लेकिन सोचिए: यदि पहली बारिश की भारी धूल, कीचड़ और सूखे पत्ते तुरंत फिल्टर से टकराते हैं, तो क्या हमारा फिल्टर पहले ही दिन बंद नहीं हो जाएगा? हम उस पहली कीचड़ भरी लहर से कैसे बच सकते हैं?",
             "chips": ["Add a First-Flush Diverter to bypass it", "Just clean the filter daily"]
           },
           "steps": [
             {
               "step_num": 1,
               "keywords": ["diverter", "first", "bypass", "add"],
-              "question": "Imagine we have a small tea strainer. If we throw a handful of mud and dry leaves into it first, what happens to the tiny holes?",
+              "questionEn": "Imagine we have a small tea strainer. If we throw a handful of mud and dry leaves into it first, what happens to the tiny holes?",
+              "questionHi": "मान लीजिए हमारे पास चाय की एक छोटी छलनी है। यदि हम उसमें सबसे पहले एक मुट्ठी मिट्टी और सूखे पत्ते डाल दें, तो छोटे-छोटे छेदों का क्या होगा?",
               "chips": ["They get completely clogged up!", "They remain clean."]
             },
             {
               "step_num": 2,
               "keywords": ["clogged", "blocked", "stopped"],
-              "question": "Exactly! It gets blocked. So to protect our fine strainer, we must first divert the big mud chunk. Which component can bypass the first mud splash?",
+              "questionEn": "Exactly! It gets blocked. So to protect our fine strainer, we must first divert the big mud chunk. Which component can bypass the first mud splash?",
+              "questionHi": "बिल्कुल सही! यह बंद हो जाती है। इसलिए अपनी छलनी को बचाने के लिए, हमें पहले कीचड़ के बड़े टुकड़े को अलग करना होगा। कौन सा घटक बारिश के पहले गंदे पानी को बाईपास कर सकता है?",
               "chips": ["The First-Flush Diverter", "A standard pipe"]
             },
             {
               "step_num": 3,
               "keywords": ["diverter", "flush", "first"],
-              "question": "Yes, the First-Flush Diverter! If we place it in Step 2, it intercepts the initial muddy wash and protects our filter. Ready to place it?",
+              "questionEn": "Yes, the First-Flush Diverter! If we place it in Step 2, it intercepts the initial muddy wash and protects our filter. Ready to place it?",
+              "questionHi": "हाँ, फर्स्ट-फ्लश डाइवर्टर! यदि हम इसे स्टेप 2 में रखते हैं, तो यह शुरूआती कीचड़ भरे पानी को रोक देता है और हमारे फिल्टर की रक्षा करता है। क्या इसे लगाने के लिए तैयार हैं?",
               "chips": ["Yes, let's place it in Step 2!", "No, keep it as is"]
             },
             {
               "step_num": 4,
               "keywords": ["yes", "place"],
-              "question": "Brilliant, beta! Add the First-Flush Diverter in Step 2 to protect the Sand/Gravel Filter in Step 3. Let's do it!",
+              "questionEn": "Brilliant, beta! Add the First-Flush Diverter in Step 2 to protect the Sand/Gravel Filter in Step 3. Let's do it!",
+              "questionHi": "शानदार, बेटा! स्टेप 3 में रेत/बजरी फिल्टर को बचाने के लिए स्टेप 2 में फर्स्ट-फ्लश डाइवर्टर जोड़ें। चलिए करते हैं!",
               "chips": ["Got it, let's update!"]
             }
           ],
-          "fallback_visual_description": "To protect your filter from clogging: sequence the water from Rooftop Collector (Step 1) -> First-Flush Diverter (Step 2) -> Sand/Gravel Filter (Step 3) -> Recharge Well (Step 4). The diverter takes the heavy mud brunt, keeping the filter clean!"
+          "fallbackEn": "To protect your filter from clogging: sequence the water from Rooftop Collector (Step 1) -> First-Flush Diverter (Step 2) -> Sand/Gravel Filter (Step 3) -> Recharge Well (Step 4). The diverter takes the heavy mud brunt, keeping the filter clean!",
+          "fallbackHi": "फिल्टर को बंद होने से बचाने के लिए पानी का बहाव इस तरह रखें: रूफटॉप कलेक्टर (स्टेप 1) -> फर्स्ट-फ्लश डाइवर्टर (स्टेप 2) -> रेत/बजरी फिल्टर (स्टेप 3) -> रीचार्ज कुआं (स्टेप 4)। डाइवर्टर कीचड़ का भार झेलता है, जिससे फिल्टर साफ रहता है!"
         },
         "budget_filter_choice": {
           "initial_question": {
-            "text": "A very clean membrane filter indeed, beta! But look at the budget indicator: we spent a huge chunk! Membrane filters cost a lot to replace, and the village school has low funds. What natural, local materials could we layer in Step 3 instead to keep it extremely cheap but efficient?",
+            "textEn": "A very clean membrane filter indeed, beta! But look at the budget indicator: we spent a huge chunk! Membrane filters cost a lot to replace, and the village school has low funds. What natural, local materials could we layer in Step 3 instead to keep it extremely cheap but efficient?",
+            "textHi": "वास्तव में एक बहुत ही साफ मेम्ब्रेन (झिल्ली) फिल्टर है, बेटा! लेकिन बजट संकेतक को देखें: हमने बहुत बड़ा हिस्सा खर्च कर दिया! मेम्ब्रेन फिल्टर को बदलने में बहुत खर्च होता है, और गांव के स्कूल के पास धन की कमी है। इसके बजाय हम स्टेप 3 में कौन सी प्राकृतिक, स्थानीय सामग्री लगा सकते हैं ताकि यह बेहद सस्ता लेकिन कुशल रहे?",
             "chips": ["Replace it with the Sand/Gravel Filter", "Keep the expensive membrane"]
           },
           "steps": [
             {
               "step_num": 1,
               "keywords": ["replace", "sand", "gravel", "local"],
-              "question": "If we need to filter water in a village but can't buy expensive fancy plastic filters, what clean materials does Mother Earth give us under our feet?",
+              "questionEn": "If we need to filter water in a village but can't buy expensive fancy plastic filters, what clean materials does Mother Earth give us under our feet?",
+              "questionHi": "यदि हमें किसी गाँव में पानी छानना है लेकिन महँगे फैंसी प्लास्टिक फिल्टर नहीं खरीद सकते, तो धरती माँ हमें अपने पैरों के नीचे कौन सी साफ सामग्री देती है?",
               "chips": ["Sand, gravel, and charcoal!", "Plastic membranes."]
             },
             {
               "step_num": 2,
               "keywords": ["sand", "gravel", "earth", "charcoal"],
-              "question": "Indeed! Sand and gravel can filter water beautifully. Why pay so much when sand and stones from our riverbed are free? Let's use local Sand/Gravel Filter!",
+              "questionEn": "Indeed! Sand and gravel can filter water beautifully. Why pay so much when sand and stones from our riverbed are free? Let's use local Sand/Gravel Filter!",
+              "questionHi": "बिल्कुल! रेत और बजरी पानी को खूबसूरती से छान सकते हैं। जब हमारी नदी तट की रेत और पत्थर मुफ्त हैं तो इतना भुगतान क्यों करें? आइए स्थानीय रेत/बजरी फ़िल्टर का उपयोग करें!",
               "chips": ["Use local Sand/Gravel Filter", "Keep membrane filter"]
             },
             {
               "step_num": 3,
               "keywords": ["use", "sand", "gravel"],
-              "question": "Let's change our Step 3 to Sand/Gravel Filter to save our precious budget. Sound like a plan, beta?",
+              "questionEn": "Let's change our Step 3 to Sand/Gravel Filter to save our precious budget. Sound like a plan, beta?",
+              "questionHi": "आइए अपने कीमती बजट को बचाने के लिए स्टेप 3 को रेत/बजरी फ़िल्टर में बदलें। क्या विचार है, बेटा?",
               "chips": ["Yes, change it to Sand/Gravel Filter!", "No, I like the expensive filter"]
             },
             {
               "step_num": 4,
               "keywords": ["yes", "change"],
-              "question": "Brilliant! Changing Step 3 to Sand/Gravel Filter cuts the initial setup and maintenance costs, making our system highly sustainable!",
+              "questionEn": "Brilliant! Changing Step 3 to Sand/Gravel Filter cuts the initial setup and maintenance costs, making our system highly sustainable!",
+              "questionHi": "शानदार! स्टेप 3 को रेत/बजरी फिल्टर में बदलने से प्रारंभिक सेटअप और रखरखाव की लागत कम हो जाती है, जिससे हमारी प्रणाली अत्यधिक टिकाऊ हो जाती है!",
               "chips": ["Excellent, let's change!"]
             }
           ],
-          "fallback_visual_description": "For high cost-efficiency and local sustainability: replace the Membrane Filter in Step 3 with the Sand/Gravel Filter. This matches the EVS constraint of utilizing simple, local materials that village schools can easily maintain."
+          "fallbackEn": "For high cost-efficiency and local sustainability: replace the Membrane Filter in Step 3 with the Sand/Gravel Filter. This matches the EVS constraint of utilizing simple, local materials that village schools can easily maintain.",
+          "fallbackHi": "उच्च लागत-दक्षता और स्थानीय स्थिरता के लिए: स्टेप 3 में मेम्ब्रेन फिल्टर को रेत/बजरी फिल्टर से बदलें। यह सरल, स्थानीय सामग्री का उपयोग करने की ईवीएस (EVS) आवश्यकता से मेल खाता है जिसे ग्रामीण स्कूल आसानी से बनाए रख सकते हैं।"
         }
       }
     }
