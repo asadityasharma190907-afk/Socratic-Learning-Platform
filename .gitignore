@@ -32,3 +32,4 @@ _bmad-output/
 node_modules/
 dist/
 build/
+.agents/.story-automator-active

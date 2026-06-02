@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "env 'PROJECT_ROOT=C:\\Users\\asadi\\Downloads\\Project 1' 'C:\\Users\\asadi\\Downloads\\Project 1\\.agents\\skills\\bmad-story-automator\\scripts\\story-automator' 1.agentsskillsbmad-story-automatorscriptsstory-automator stop-hook",
+            "timeout": 10,
+            "statusMessage": "Checking story automator state"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "env 'PROJECT_ROOT=C:\\Users\\asadi\\Downloads\\Project 1' 'C:\\Users\\asadi\\Downloads\\Project 1\\.agents\\skills\\bmad-story-automator\\scripts\\story-automator' -m story_automator stop-hook",
+            "timeout": 10,
+            "statusMessage": "Checking story automator state"
+          }
+        ]
+      }
+    ]
+  }
+}

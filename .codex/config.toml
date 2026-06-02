@@ -1,0 +1,5 @@
+[features]
+hooks = true
+
+[projects."C:\\Users\\asadi\\Downloads\\Project 1"]
+trust_level = "trusted"
