@@ -235,14 +235,27 @@
       height: 100%;
     }
 
+    .canvas-panel-container {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(11, 15, 25, 0.15);
+    }
+
     /* ── CANVAS WORKSPACE ── */
     .canvas-panel {
+      width: 100%;
+      max-width: 42rem; /* max-w-2xl */
       display: flex;
       flex-direction: column;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       padding: 1rem 1.5rem;
       overflow: hidden;
       background: rgba(11, 15, 25, 0.2);
+      border-left: 1px solid rgba(255, 255, 255, 0.06);
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
     }
 
     .canvas-header {
@@ -376,6 +389,42 @@
       border-color: rgba(255, 255, 255, 0.15);
     }
 
+    /* ── SVG AND ANIMATIONS FOR DRAG AND DROP ── */
+    .node-svg {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      display: inline-block;
+      vertical-align: middle;
+      transition: transform 0.2s ease;
+    }
+
+    .drag-node:hover .node-svg {
+      transform: scale(1.1);
+    }
+
+    .snap-zone {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .snap-zone.highlight {
+      border-color: #6366F1 !important;
+      background: rgba(99, 102, 241, 0.08) !important;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.6) !important;
+      transform: scale(1.02);
+    }
+
+    @keyframes scale-bounce {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .scale-bounce {
+      animation: scale-bounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-origin: center;
+    }
+
     .slot-label {
       font-size: 0.65rem;
       color: var(--text-dim);
@@ -400,15 +449,34 @@
       font-size: 1.6rem;
     }
 
+    .placed-icon-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 32px;
+      width: 32px;
+      margin-bottom: 4px;
+    }
+
+    .placed-item-text {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--white);
+    }
+
     .remove-node-btn {
       position: absolute;
-      top: 0.3rem; right: 0.3rem;
+      top: 0; right: 0;
       background: none;
       border: none;
       color: var(--text-dim);
       cursor: pointer;
-      font-size: 0.75rem;
-      padding: 0.1rem;
+      font-size: 0.95rem;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .remove-node-btn:hover { color: var(--coral); }
@@ -438,6 +506,7 @@
       border: none;
       border-radius: 8px;
       padding: 0.5rem 1.2rem;
+      min-height: 48px;
       color: white;
       font-family: 'Outfit', sans-serif;
       font-size: 0.8rem;
@@ -672,7 +741,7 @@
     .chat-input:focus { border-color: var(--indigo); }
 
     .send-btn {
-      width: 40px; height: 40px;
+      width: 48px; height: 48px;
       background: linear-gradient(135deg, var(--indigo), var(--indigo-light));
       border: none;
       border-radius: 10px;
@@ -693,6 +762,7 @@
       border: 1px solid rgba(255, 107, 74, 0.25);
       border-radius: 100px;
       padding: 0.3rem 0.8rem;
+      min-height: 48px;
       color: var(--coral);
       font-size: 0.75rem;
       font-weight: 600;
@@ -909,65 +979,112 @@
   <div class="left-viewport">
     
     <!-- CANVAS WORKSPACE -->
-    <div class="canvas-panel">
-      <div class="canvas-header">
-        <div class="challenge-tag">🌊 EVS · Rainwater Harvesting</div>
-        <div class="budget-indicator">Budget: <span id="budgetRemaining">₹12,000</span> / ₹12,000</div>
-      </div>
-      
-      <div class="village-context">
-        <strong>Village Context:</strong> Low annual rainfall. Silt-heavy runoff. Underground drinking well needs groundwater recharging. Standard membrane filters are too expensive.
-      </div>
-
-      <div class="workspace-area">
-        <!-- Draggable components bin -->
-        <div class="components-bin">
-          <div class="bin-title">Available Parts</div>
-          
-          <div class="drag-node" draggable="true" ondragstart="drag(event)" id="comp-rooftop" data-name="Rooftop Collector" data-icon="🏠" data-cost="2000">
-            <span>🏠</span> Rooftop Coll.
+    <div class="canvas-panel-container">
+      <div class="canvas-panel">
+        <div class="canvas-header">
+          <div class="challenge-tag">🌊 EVS · Rainwater Harvesting</div>
+          <div class="budget-indicator">Budget: <span id="budgetRemaining">₹12,000</span> / ₹12,000</div>
+        </div>
+        
+        <!-- Socratic Progress Bar -->
+        <div class="socratic-progress-container" style="margin-bottom: 0.8rem;">
+          <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); font-weight:600; margin-bottom:0.3rem;">
+            <span>Socratic Progress</span>
+            <span id="socraticProgressText">Concept 1 of 3</span>
           </div>
-          
-          <div class="drag-node" draggable="true" ondragstart="drag(event)" id="comp-diverter" data-name="First-Flush Diverter" data-icon="🚰" data-cost="1500">
-            <span>🚰</span> First-Flush Div.
-          </div>
-          
-          <div class="drag-node" draggable="true" ondragstart="drag(event)" id="comp-filter" data-name="Sand/Gravel Filter" data-icon="🥪" data-cost="2500">
-            <span>🥪</span> Sand/Gravel Filt.
-          </div>
-          
-          <div class="drag-node" draggable="true" ondragstart="drag(event)" id="comp-membrane" class="drag-node expensive" draggable="true" ondragstart="drag(event)" id="comp-membrane" data-name="Membrane Filter" data-icon="🔬" data-cost="8000">
-            <span>🔬</span> Membrane Filt.
-          </div>
-
-          <div class="drag-node" draggable="true" ondragstart="drag(event)" id="comp-well" data-name="Recharge Well Inlet" data-icon="🎛️" data-cost="3000">
-            <span>🎛️</span> Well Inlet
+          <div class="socratic-progress-track" style="height: 2px; background: rgba(255,255,255,0.1); border-radius: 2px;">
+            <div id="socraticProgressFill" style="height: 100%; width: 33.33%; background: #6366F1; border-radius: 2px; transition: width 0.3s ease;"></div>
           </div>
         </div>
 
-        <!-- Target pipeline slots -->
-        <div class="system-pipeline">
-          <div class="pipeline-slot" id="slot-1" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 1)">
-            <span class="slot-label">Step 1: Intake</span>
-          </div>
-          
-          <div class="pipeline-slot" id="slot-2" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 2)">
-            <span class="slot-label">Step 2: Divert</span>
+        <div class="village-context">
+          <strong>Village Context:</strong> Low annual rainfall. Silt-heavy runoff. Underground drinking well needs groundwater recharging. Standard membrane filters are too expensive.
+        </div>
+
+        <div class="workspace-area">
+          <!-- Draggable components bin -->
+          <div class="components-bin">
+            <div class="bin-title">Available Parts</div>
+            
+            <div class="drag-node" draggable="true" ondragstart="drag(event)" id="comp-rooftop" data-name="Rooftop Collector" data-cost="2000">
+              <svg class="node-svg" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 20h18M12 4L4 11h16z" fill="rgba(99,102,241,0.15)"/>
+                <path d="M6 11v7h12v-7" />
+              </svg>
+              <span>Rooftop Coll.</span>
+            </div>
+
+            <div class="drag-node" draggable="true" ondragstart="drag(event)" id="comp-pipes" data-name="Conduit Pipes" data-cost="1000">
+              <svg class="node-svg" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 8h10v8H3z" fill="rgba(16,185,129,0.15)"/>
+                <path d="M13 12h8" />
+                <path d="M18 9l3 3-3 3" />
+              </svg>
+              <span>Conduit Pipes</span>
+            </div>
+
+            <div class="drag-node" draggable="true" ondragstart="drag(event)" id="comp-first-flush" data-name="First-Flush Diverter" data-cost="1500">
+              <svg class="node-svg" viewBox="0 0 24 24" fill="none" stroke="#F43F5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3v13M12 16l-4-4m4 4l4-4M4 21h16" />
+                <circle cx="12" cy="16" r="2" fill="#F43F5E" />
+              </svg>
+              <span>First-Flush Div.</span>
+            </div>
+
+            <div class="drag-node" draggable="true" ondragstart="drag(event)" id="comp-filter-chamber" data-name="Sand/Gravel Filter" data-cost="2500">
+              <svg class="node-svg" viewBox="0 0 24 24" fill="none" stroke="#ffb347" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="3" width="16" height="18" rx="2" fill="rgba(255,179,71,0.15)" />
+                <line x1="4" y1="9" x2="20" y2="9" stroke="rgba(255,255,255,0.2)" />
+                <line x1="4" y1="15" x2="20" y2="15" stroke="rgba(255,255,255,0.2)" />
+                <circle cx="8" cy="12" r="1.5" fill="#ffb347" />
+                <circle cx="12" cy="12" r="1.5" fill="#ffb347" />
+                <circle cx="16" cy="12" r="1.5" fill="#ffb347" />
+              </svg>
+              <span>Sand/Gravel Filt.</span>
+            </div>
+
+            <div class="drag-node expensive" draggable="true" ondragstart="drag(event)" id="comp-membrane" data-name="Membrane Filter" data-cost="8000">
+              <svg class="node-svg" viewBox="0 0 24 24" fill="none" stroke="#F43F5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" fill="rgba(244,63,94,0.1)" />
+                <path d="M3 9h18M3 15h18M9 3v18M15 3v18" stroke-dasharray="2,2" />
+              </svg>
+              <span>Membrane Filt.</span>
+            </div>
+
+            <div class="drag-node" draggable="true" ondragstart="drag(event)" id="comp-recharge-well" data-name="Recharge Well Inlet" data-cost="3000">
+              <svg class="node-svg" viewBox="0 0 24 24" fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9" fill="rgba(99,102,241,0.15)" />
+                <circle cx="12" cy="12" r="5" stroke="#10B981" />
+                <path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke-opacity="0.6" />
+              </svg>
+              <span>Well Inlet</span>
+            </div>
           </div>
 
-          <div class="pipeline-slot" id="slot-3" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 3)">
-            <span class="slot-label">Step 3: Filter</span>
-          </div>
+          <!-- Target pipeline slots -->
+          <div class="system-pipeline">
+            <div class="pipeline-slot snap-zone" id="slot-1" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 1)">
+              <span class="slot-label">Step 1: Intake</span>
+            </div>
+            
+            <div class="pipeline-slot snap-zone" id="slot-2" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 2)">
+              <span class="slot-label">Step 2: Divert</span>
+            </div>
 
-          <div class="pipeline-slot" id="slot-4" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 4)">
-            <span class="slot-label">Step 4: Recharge</span>
+            <div class="pipeline-slot snap-zone" id="slot-3" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 3)">
+              <span class="slot-label">Step 3: Filter</span>
+            </div>
+
+            <div class="pipeline-slot snap-zone" id="slot-4" ondragover="allowDrop(event)" ondragenter="dragEnter(event)" ondragleave="dragLeave(event)" ondrop="drop(event, 4)">
+              <span class="slot-label">Step 4: Recharge</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="canvas-actions">
-        <button class="hint-btn" onclick="clearCanvas()" style="margin-top:0;background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.15);color:var(--white);">Reset Setup</button>
-        <button class="test-idea-btn" onclick="validateDesign()">Test My Design →</button>
+        <div class="canvas-actions">
+          <button class="hint-btn" onclick="clearCanvas()" style="margin-top:0;background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.15);color:var(--white);">Reset Setup</button>
+          <button class="test-idea-btn" onclick="validateDesign()">Test My Design →</button>
+        </div>
       </div>
     </div>
 
@@ -1110,6 +1227,70 @@
   let budget = 12000;
   const pipeline = [null, null, null, null]; // Slots 1 to 4
   let isOnline = true;
+  let conceptStage = 1;
+  const totalConcepts = 3;
+
+  function updateSocraticProgress(stage) {
+    conceptStage = stage;
+    document.getElementById('socraticProgressText').textContent = `Concept ${stage} of ${totalConcepts}`;
+    document.getElementById('socraticProgressFill').style.width = `${(stage / totalConcepts) * 100}%`;
+  }
+
+  function saveLayout() {
+    const layoutState = {
+      pipeline: pipeline,
+      budget: budget,
+      conceptStage: conceptStage
+    };
+    localStorage.setItem('sahai_session_rainwater', JSON.stringify(layoutState));
+  }
+
+  function escapeHTML(str) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+  }
+
+  // Restore Layout on Load (under 50ms)
+  window.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem('sahai_session_rainwater');
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        budget = (typeof data.budget === 'number' && !isNaN(data.budget)) ? data.budget : 12000;
+        updateBudgetUI();
+        
+        if (data.conceptStage) {
+          updateSocraticProgress(data.conceptStage);
+        }
+
+        for (let i = 0; i < 4; i++) {
+          const item = data.pipeline[i];
+          if (item) {
+            pipeline[i] = item;
+            const slot = document.getElementById(`slot-${i + 1}`);
+            slot.classList.add('filled');
+            
+            const originalNode = document.getElementById(item.id);
+            const svgElement = originalNode ? originalNode.querySelector('svg') : null;
+            const svgContent = svgElement ? svgElement.outerHTML : '';
+            
+            slot.innerHTML = `
+              <div class="placed-item scale-bounce">
+                <div class="placed-icon-container">
+                  ${svgContent}
+                </div>
+                <span class="placed-item-text">${escapeHTML(item.name)}</span>
+              </div>
+              <button class="remove-node-btn" onclick="removeNode(${i + 1})">✕</button>
+            `;
+          }
+        }
+      } catch (e) {
+        console.error("Failed to restore layout state", e);
+      }
+    }
+  });
 
   // Initialize from LocalStorage if exists
   if (localStorage.getItem('studentXp')) {
@@ -1233,6 +1414,10 @@
   // ── DRAG AND DROP LOGIC ──
   function allowDrop(ev) {
     ev.preventDefault();
+  }
+
+  function dragEnter(ev) {
+    ev.preventDefault();
     ev.currentTarget.classList.add('highlight');
   }
 
@@ -1251,10 +1436,17 @@
     
     const nodeId = ev.dataTransfer.getData("nodeId");
     const originalNode = document.getElementById(nodeId);
+    if (!originalNode) return;
     
     const nodeName = originalNode.dataset.name;
-    const icon = originalNode.dataset.icon;
     const cost = parseInt(originalNode.dataset.cost);
+
+    // Duplicate check
+    const alreadyPlacedIndex = pipeline.findIndex(item => item && item.id === nodeId);
+    if (alreadyPlacedIndex !== -1) {
+      showNotification("This component is already placed in the pipeline!");
+      return;
+    }
 
     // Budget check
     if (budget - cost < 0) {
@@ -1263,19 +1455,27 @@
     }
 
     // Place element in local array state
-    pipeline[slotIndex - 1] = { id: nodeId, name: nodeName, icon: icon, cost: cost };
+    pipeline[slotIndex - 1] = { id: nodeId, name: nodeName, cost: cost };
     budget -= cost;
 
     // Update UI elements
     updateBudgetUI();
     slot.classList.add('filled');
+
+    const svgElement = originalNode.querySelector('svg');
+    const svgContent = svgElement ? svgElement.outerHTML : '';
+
     slot.innerHTML = `
-      <div class="placed-item">
-        <span class="placed-icon">${icon}</span>
-        <span>${nodeName}</span>
+      <div class="placed-item scale-bounce">
+        <div class="placed-icon-container">
+          ${svgContent}
+        </div>
+        <span class="placed-item-text">${nodeName}</span>
       </div>
       <button class="remove-node-btn" onclick="removeNode(${slotIndex})">✕</button>
     `;
+
+    saveLayout();
   }
 
   function removeNode(slotIndex) {
@@ -1291,6 +1491,8 @@
     slot.classList.remove('filled');
     const labelNames = ["Intake", "Divert", "Filter", "Recharge"];
     slot.innerHTML = `<span class="slot-label">Step ${slotIndex}: ${labelNames[slotIndex - 1]}</span>`;
+    
+    saveLayout();
   }
 
   function clearCanvas() {
@@ -1336,6 +1538,8 @@
 
       // Case: Direct Connection (No filter, no diverter)
       if (intake && recharge && !divert && !filter) {
+        updateSocraticProgress(1);
+        saveLayout();
         setMascotState('hint');
         addAIBubble({
           type: 'hint',
@@ -1348,6 +1552,8 @@
 
       // Case: No first flush diverter placed (but filter is placed)
       if (intake && filter && recharge && !divert) {
+        updateSocraticProgress(2);
+        saveLayout();
         setMascotState('hint');
         addAIBubble({
           type: 'hint',
@@ -1360,6 +1566,8 @@
 
       // Case: High tech membrane filter used (Budget crash check)
       if (intake && divert && filter && filter.id === 'comp-membrane') {
+        updateSocraticProgress(2);
+        saveLayout();
         setMascotState('hint');
         addAIBubble({
           type: 'hint',
@@ -1372,10 +1580,12 @@
 
       // Case: Correct configuration (Rooftop + Diverter + Sand/Gravel + Well)
       if (intake && intake.id === 'comp-rooftop' &&
-          divert && divert.id === 'comp-diverter' &&
-          filter && filter.id === 'comp-filter' &&
-          recharge && recharge.id === 'comp-well') {
+          divert && (divert.id === 'comp-diverter' || divert.id === 'comp-first-flush') &&
+          filter && (filter.id === 'comp-filter' || filter.id === 'comp-filter-chamber') &&
+          recharge && (recharge.id === 'comp-well' || recharge.id === 'comp-recharge-well')) {
         
+        updateSocraticProgress(3);
+        saveLayout();
         setMascotState('success');
         addFeedbackBanner("✅ Congratulations! System Designed Successfully!");
         

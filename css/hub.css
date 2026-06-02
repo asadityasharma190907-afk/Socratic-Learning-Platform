@@ -1,0 +1,384 @@
+/* ==============================
+   PAGE LAYOUT
+   ============================== */
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  /* AC: 3 & Finding 3 — Map to var(--bg-canvas) */
+  background-color: var(--bg-canvas);
+  overflow-x: hidden;
+}
+
+/* Subtle grid overlay — zero GPU cost, CSS background-image pattern */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Decorative ambient orbs — CSS blur, no canvas, no box-shadow on cards */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(72px);
+  pointer-events: none;
+  z-index: 0;
+  animation: orb-drift 10s ease-in-out infinite;
+}
+.orb-indigo {
+  width: 360px; height: 360px;
+  /* Finding 3 — Map to var(--indigo-dim) */
+  background: var(--indigo-dim);
+  top: -80px; left: -80px;
+  animation-delay: 0s;
+}
+.orb-mint {
+  width: 280px; height: 280px;
+  /* Finding 3 — Map to var(--mint-dim) */
+  background: var(--mint-dim);
+  bottom: -60px; right: -60px;
+  animation-delay: 4s;
+}
+@keyframes orb-drift {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%       { transform: translateY(-18px) scale(1.04); }
+}
+
+/* ==============================
+   MAIN CONTAINER
+   ============================== */
+.hub-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 860px;
+  padding: var(--space-xl) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xl);
+}
+
+/* ==============================
+   HEADER BADGE
+   ============================== */
+.platform-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  /* Finding 3 — Map to var(--indigo-dim) and var(--indigo-border) */
+  background: var(--indigo-dim);
+  border: 1px solid var(--indigo-border);
+  border-radius: var(--rounded-full);
+  padding: 6px 18px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--indigo-300); /* Finding 3 — Map to var(--indigo-300) */
+}
+.platform-badge .status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mint);
+  animation: pulse-dot 2.4s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.35; transform: scale(0.75); }
+}
+
+/* ==============================
+   HEADING BLOCK
+   ============================== */
+.hub-header {
+  text-align: center;
+}
+.hub-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: var(--space-md);
+}
+.hub-header h1 .accent-indigo { color: var(--indigo); }
+.hub-header h1 .accent-mint   { color: var(--mint);   }
+
+.hub-header .subtitle {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--text-muted);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* ==============================
+   SECTION LABEL
+   ============================== */
+.section-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  align-self: flex-start;
+}
+
+/* ==============================
+   CHALLENGE CARDS GRID
+   =========================== */
+.challenge-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
+  width: 100%;
+}
+
+/* ==============================
+   CHALLENGE CARD — AC: 3 (no box-shadow)
+   ============================== */
+.challenge-card {
+  background: var(--surface);
+  /* ARCHITECTURE: box-shadow BANNED — depth via border contrast only */
+  border: 1px solid var(--border);
+  border-radius: var(--rounded-lg);
+  padding: var(--space-xl) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  cursor: pointer;
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Accent stripe on top border — solid color, no shadow */
+.challenge-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: var(--rounded-lg) var(--rounded-lg) 0 0;
+  transition: opacity 0.25s ease;
+  opacity: 0.6;
+}
+
+/* Hover — solid border highlight, no box-shadow per NFR */
+.challenge-card:hover {
+  transform: translateY(-4px);
+  background: var(--surface-hover);
+}
+.challenge-card:hover::before { opacity: 1; }
+
+/* Water Filtration — Indigo accent */
+.challenge-card.water {
+  border-color: var(--border);
+}
+.challenge-card.water::before  { background: var(--indigo); }
+.challenge-card.water:hover     { border-color: var(--indigo-border); }
+
+/* Soil Analysis — Mint accent */
+.challenge-card.soil {
+  border-color: var(--border);
+}
+.challenge-card.soil::before    { background: var(--mint); }
+.challenge-card.soil:hover      { border-color: var(--mint-border); }
+
+/* ==============================
+   CARD INNER ELEMENTS
+   ============================== */
+.card-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--rounded-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  border: 1px solid var(--border);
+  background: var(--bg-canvas);
+}
+.challenge-card.water .card-icon-wrap { border-color: var(--indigo-border); background: var(--indigo-dim); }
+.challenge-card.soil  .card-icon-wrap { border-color: var(--mint-border);   background: var(--mint-dim);   }
+
+.card-subject-tag {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: var(--rounded-full);
+  border: 1px solid;
+  width: fit-content;
+}
+.challenge-card.water .card-subject-tag { color: var(--indigo-300); border-color: var(--indigo-border); background: var(--indigo-dim); }
+.challenge-card.soil  .card-subject-tag { color: var(--mint-300); border-color: var(--mint-border);   background: var(--mint-dim);   }
+
+.card-title {
+  font-family: var(--font-display);  /* AC: 4 — Outfit for card headers */
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.card-description {
+  font-family: var(--font-body);  /* AC: 4 — Inter for body text */
+  font-size: 0.9rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--text-muted);
+  flex: 1;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+  border-top: 1px solid var(--border-subtle);
+}
+.card-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.card-meta-item svg {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* ==============================
+   SELECT BUTTON — AC: 5 (min 48px height)
+   ============================== */
+.btn-select {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  font-family: var(--font-body);  /* Inter for button label */
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  /* AC: 5 — minimum 48px tap area */
+  min-height: 48px;
+  min-width: 48px;
+  padding: 0 var(--space-lg);
+  border-radius: var(--rounded-md);
+  border: 1px solid;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  text-align: center;
+  width: 100%;
+}
+.btn-select:active { transform: scale(0.98); }
+
+.challenge-card.water .btn-select {
+  background: var(--indigo-dim);
+  border-color: var(--indigo-border);
+  color: var(--indigo-300);
+}
+.challenge-card.water .btn-select:hover {
+  background: var(--indigo);
+  border-color: var(--indigo);
+  color: #fff;
+}
+.challenge-card.soil .btn-select {
+  background: var(--mint-dim);
+  border-color: var(--mint-border);
+  color: var(--mint-300);
+}
+.challenge-card.soil .btn-select:hover {
+  background: var(--mint);
+  border-color: var(--mint);
+  color: var(--bg-canvas);
+}
+
+/* Arrow animation on button hover */
+.btn-select .btn-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+.btn-select:hover .btn-arrow { transform: translateX(4px); }
+
+/* ==============================
+   TEACHER LINK FOOTER
+   ============================== */
+.hub-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  text-align: center;
+}
+.teacher-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: var(--rounded-md);
+  border: 1px solid var(--border-subtle);
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.teacher-link:hover {
+  color: var(--coral);
+  border-color: var(--coral-border);
+  background: var(--coral-dim);
+}
+.powered-by {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(156, 163, 175, 0.4);
+}
+
+/* ==============================
+   RESPONSIVE — CHROMEBOOK 1366x768 + TABLETS
+   ============================== */
+@media (max-width: 680px) {
+  .challenge-grid {
+    grid-template-columns: 1fr;
+  }
+  .hub-container {
+    padding: var(--space-lg) var(--space-md);
+  }
+}
+
+/* ==============================
+   TRANSITION: page exit fade
+   ============================== */
+body.navigating {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
