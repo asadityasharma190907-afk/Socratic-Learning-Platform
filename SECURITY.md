@@ -1,6 +1,6 @@
 # 🛡️ Security Policy
 
-We take security and data privacy seriously. As an offline-first Socratic learning platform, we want to ensure all student data cached in `LocalStorage` or `IndexedDB` remains fully isolated, and any cloud interfaces are robust and protected.
+We take security and data privacy seriously. As an offline-first Socratic learning platform, we want to ensure all student data cached in our local `IndexedDB` instance (via Dexie.js) remains fully isolated, and any cloud interfaces are robust and protected.
 
 ---
 
@@ -10,8 +10,8 @@ The following versions of **SahAI for Shiksha** are currently supported with sec
 
 | Version | Status |
 | :--- | :--- |
-| `1.0.x` (Prototype) | Supported (Active development) |
-| `< 1.0.0` | EOL / Deprecated |
+| `1.0.x` (Next.js PWA) | Supported (Active development) |
+| `< 1.0.0` (Vanilla HTML) | EOL / Deprecated |
 
 ---
 

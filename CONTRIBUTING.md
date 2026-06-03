@@ -33,17 +33,19 @@ We strictly follow the **Conventional Commits** standard to enable clear automat
 | `docs:` | Creating or updating documentation files | `docs: add contributing and security guidelines` |
 | `style:` | Purely visual formatting, styling, HSL corrections | `style: adjust glowing snap guide active shadow HSL` |
 | `refactor:` | Reworking code logic without changing its outcome | `refactor: extract socratic dialogue state triggers` |
-| `chore:` | Updating workflows, configs, `.gitignore`, etc. | `chore: add automated htmlhint code quality workflow` |
+| `chore:` | Updating workflows, configs, `.gitignore`, etc. | `chore: add automated next lint code quality workflow` |
 
 ---
 
 ## 🎨 Architectural & Design Guidelines
 
-Our core objective is to deliver a premium user experience with **zero external dependencies**. Keep the following principles in mind:
+Our core objective is to deliver a premium user experience with highly robust offline capabilities. Keep the following principles in mind:
 
-### 1. Zero-dependency Core
-- Do NOT run `npm init` or introduce package managers unless explicitly requested by the core architecture plan.
-- All layouts must run perfectly by opening the static HTML files directly in any modern browser.
+### 1. Next.js App Router Core
+- We use the Next.js 14 App Router and TypeScript.
+- You must run `npm install` and `npm run dev` to start the local development server.
+- All code should be strongly typed and strictly linted with `next lint`.
+- Do not bypass TypeScript compiler warnings.
 
 ### 2. Premium Visual Design & HSL Colors
 - Do NOT use standard flat red/blue/green colors.
@@ -65,14 +67,14 @@ Our core objective is to deliver a premium user experience with **zero external 
 Before submitting a Pull Request (PR):
 1. **Sync up:** Make sure your branch is up-to-date with `main`.
 2. **Review the Checklist:** Complete the teammate checks in the `.github/pull_request_template.md`.
-3. **Automated Checks:** Ensure the **Code Quality Audit** GitHub Action passes without any `htmlhint` warnings or errors.
+3. **Automated Checks:** Ensure the **Code Quality Audit** GitHub Action passes without any ESLint warnings or errors (`npm run lint`).
 
 ---
 
 ## 🛡️ Repository Hygiene & Clean State (Judges' Wow-Factor)
 
 To ensure that hackathon judges are only presented with clean, production-grade code:
-*   **Do NOT force-track files:** Never use `git add -f` or bypass the `.gitignore`. AI agent caches (`.agent/`, `.agents/`, `.claude/`), local metadata (`_bmad/`), or temp directories must never be uploaded.
+*   **Do NOT force-track files:** Never use `git add -f` or bypass the `.gitignore`. AI agent caches (`.agent/`, `.agents/`, `.claude/`), local metadata (`_bmad/`), or `.next/` build directories must never be uploaded.
 *   **Keep assets local and lightweight:** Use inline SVGs rather than heavy external image assets to ensure the static files load instantly (< 2s) for evaluation.
 
 ---
@@ -93,4 +95,3 @@ Since this repository is hosted on a **personal account** where enterprise gover
     *   Teammate D (Git Master & Auditor) acts as the final gatekeeper to verify that all NFRs (Offline accessibility, WCAG compliance) are fully met before merging.
 3.  **Local Conflict Resolution:**
     *   If a merge conflict occurs, pull `main` locally, rebase or merge it into your feature branch (`git merge main`), resolve conflicts in your editor, and then push back to GitHub. Never attempt to force-merge on the GitHub website.
-

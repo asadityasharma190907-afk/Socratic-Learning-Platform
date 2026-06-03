@@ -1,6 +1,13 @@
 {
   "name": "sahai-for-shiksha",
   "version": "0.1.0",
+  "description": "Socratic Learning Platform built with Next.js",
+  "author": "Asaditya Sharma",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/asadityasharma190907-afk/Socratic-Learning-Platform.git"
+  },
   "private": true,
   "scripts": {
     "dev": "next dev",
