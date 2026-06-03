@@ -1,18 +1,44 @@
-/**
- * SahAI Socratic Learning Platform — Socratic Chat Engine
- * Cyber-Pedagogy Conversational Scaffolding & Bilingual Translation Switcher
- * File: js/chat.js
- */
+export interface Bubble {
+  id: string;
+  sender: 'ai' | 'student' | 'system';
+  type: string;
+  textEn: string;
+  textHi: string;
+  chips?: string[];
+}
 
-class SocraticChatEngine {
-  constructor() {
-    this.challenges = null;
-    this.activeChallenge = 'water-filtration';
-    
-    // Dynamic CSS Injection for absolute modularity
-    this.injectStyles();
+export interface EngineCallbacks {
+  onAddBubble: (bubble: Bubble) => void;
+  onSetMascotState: (state: 'success' | 'hint' | 'idle') => void;
+  onUpdateProgress: (stage: number) => void;
+  onAwardXP: (amount: number) => void;
+  onOpenReflectionModal: () => void;
+  onShowTyping: () => void;
+  onHideTyping: () => void;
+  onSaveLayout: () => void;
+}
 
-    // Default fallback analogies if network fetch fails (offline safety)
+export class SocraticChatEngine {
+  private activeChallenge: string = 'water-filtration';
+  private fallbackData: any;
+  private challenges: any = null;
+  private callbacks: EngineCallbacks;
+
+  public state = {
+    activeTree: null as string | null,
+    stepIndex: 0,
+    questionCount: 0,
+    language: 'en' as 'en' | 'hi',
+    hintCounter: 0
+  };
+
+  constructor(callbacks: EngineCallbacks) {
+    this.callbacks = callbacks;
+    this.initializeFallbackData();
+    this.loadChallengesAndInit();
+  }
+
+  private initializeFallbackData() {
     this.fallbackData = {
       "direct_connection_dust": {
         "initial_question": {
@@ -132,115 +158,11 @@ class SocraticChatEngine {
         "fallbackHi": "उच्च लागत-दक्षता और स्थानीय स्थिरता के लिए: स्टेप 3 में मेम्ब्रेन फिल्टर को रेत/बजरी फिल्टर से बदलें। यह सरल, स्थानीय सामग्री का उपयोग करने की ईवीएस (EVS) आवश्यकता से मेल खाता है जिसे ग्रामीण स्कूल आसानी से बनाए रख सकते हैं।"
       }
     };
-
-    // Global Reactive Shallow Proxy for Socratic & Translation State
-    this.state = new Proxy({
-      activeTree: null,
-      stepIndex: 0,
-      questionCount: 0,
-      language: 'en',
-      hintCounter: 0
-    }, {
-      set: (target, prop, value) => {
-        const oldVal = target[prop];
-        target[prop] = value;
-        if (prop === 'language' && oldVal !== value) {
-          // Fire event for UI update
-          document.dispatchEvent(new CustomEvent('sahai:language-changed', {
-            detail: { language: value }
-          }));
-        }
-        return true;
-      }
-    });
-
-    this.setupEventListeners();
-    this.loadChallengesAndInit();
-  }
-
-  injectStyles() {
-    const style = document.createElement('style');
-    style.textContent = `
-      .ai-bubble {
-        position: relative;
-        transition: border-color 0.3s ease, background-color 0.3s ease;
-      }
-      .translate-toggle-btn {
-        position: absolute;
-        top: 0.6rem;
-        right: 0.8rem;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: var(--rounded-full);
-        padding: 0.2rem 0.6rem;
-        font-size: 0.68rem;
-        font-family: var(--font-display);
-        font-weight: 600;
-        color: var(--text-muted);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 3px;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 10;
-        outline: none;
-      }
-      .translate-toggle-btn:hover {
-        background: var(--indigo-dim);
-        border-color: var(--indigo-border);
-        color: var(--text);
-        transform: scale(1.04);
-      }
-      .translate-toggle-btn .lang-label {
-        transition: color 0.2s ease, font-weight 0.2s ease;
-      }
-      .translate-toggle-btn .lang-label.active {
-        color: var(--indigo-300);
-        font-weight: 700;
-      }
-      .translate-toggle-btn .lang-divider {
-        opacity: 0.25;
-        margin: 0 1px;
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
-  setupEventListeners() {
-    // Reactive Event Listener: automatically swaps translations in-place for all visible AI bubbles
-    document.addEventListener('sahai:language-changed', (e) => {
-      const lang = e.detail.language;
-      const bubbles = document.querySelectorAll('.ai-bubble');
-      bubbles.forEach(bubble => {
-        const textEn = bubble.getAttribute('data-text-en');
-        const textHi = bubble.getAttribute('data-text-hi');
-        const contentDiv = bubble.querySelector('.ai-text-content');
-        if (contentDiv) {
-          contentDiv.innerHTML = lang === 'hi' ? textHi : textEn;
-        }
-
-        // Sync toggle buttons
-        const btn = bubble.querySelector('.translate-toggle-btn');
-        if (btn) {
-          const enLabel = btn.querySelector('.lang-label.en');
-          const hiLabel = btn.querySelector('.lang-label.hi');
-          if (enLabel && hiLabel) {
-            if (lang === 'en') {
-              enLabel.classList.add('active');
-              hiLabel.classList.remove('active');
-            } else {
-              enLabel.classList.remove('active');
-              hiLabel.classList.add('active');
-            }
-          }
-        }
-      });
-    });
   }
 
   async loadChallengesAndInit() {
     try {
-      const response = await fetch('data/challenges/water-filtration.json');
+      const response = await fetch('/data/challenges/water-filtration.json');
       if (response.ok) {
         const data = await response.json();
         this.challenges = data.challenges[this.activeChallenge].states;
@@ -252,43 +174,36 @@ class SocraticChatEngine {
       this.challenges = this.fallbackData;
     }
 
-    // Dynamic clean rendering of translatable Welcome Message
     this.renderWelcome();
   }
 
   renderWelcome() {
-    const chat = document.getElementById('chatArea');
-    if (!chat) return;
-
-    // Clear static welcome if present to avoid duplicates
-    const welcome = chat.querySelector('.msg-ai');
-    if (welcome && !welcome.querySelector('.translate-toggle-btn')) {
-      welcome.remove();
-    }
-
-    this.addAIBubble({
+    this.callbacks.onAddBubble({
+      id: 'welcome-' + Date.now(),
+      sender: 'ai',
       type: 'welcome',
       textEn: `<strong>Welcome back, Aarya!</strong> 🌱 We need your help to capture clean rainwater for the village. <br/><br/>Drag components from the <strong>Available Parts</strong> bin on the left into the 4 slots of our **Rainwater Harvesting Pipeline** above. Once your design is complete, click <strong>"Test My Design"</strong> so we can evaluate it together!`,
       textHi: `<strong>स्वागत है, आर्या!</strong> 🌱 हमें गाँव के लिए साफ़ बारिश का पानी इकट्ठा करने में आपकी मदद की ज़रूरत है। <br/><br/>बाईं ओर <strong>'Available Parts'</strong> वाले डिब्बे से घटकों को ऊपर हमारे **Rainwater Harvesting Pipeline** के 4 स्लॉट्स में खींचें। जब आपका डिज़ाइन पूरा हो जाए, तो <strong>"Test My Design"</strong> पर क्लिक करें ताकि हम मिलकर इसका मूल्यांकन कर सकें!`
     });
   }
 
-  evaluateDesign(pipeline) {
+  evaluateDesign(pipeline: Array<{ id: string; name: string; cost: number } | null>) {
     const intake = pipeline[0];
     const divert = pipeline[1];
     const filter = pipeline[2];
     const recharge = pipeline[3];
 
-    // Pulsing typing indicator duration between 500ms and 800ms
     const delay = Math.floor(Math.random() * 300) + 500;
-    this.showTypingIndicator();
+    this.callbacks.onShowTyping();
 
     setTimeout(() => {
-      this.hideTypingIndicator();
+      this.callbacks.onHideTyping();
 
       // Case: Empty Setup
       if (!intake && !divert && !filter && !recharge) {
-        this.addAIBubble({
+        this.callbacks.onAddBubble({
+          id: 'eval-' + Date.now(),
+          sender: 'ai',
           type: 'hint',
           textEn: "Let's put our heads together, beta! Place the Rooftop Collector in Step 1 to start capturing the rainfall!",
           textHi: "आइए मिलकर सोचते हैं, बेटा! बारिश के पानी को इकट्ठा करना शुरू करने के लिए स्टेप 1 में रूफटॉप कलेक्टर (Rooftop Collector) रखें!"
@@ -298,16 +213,18 @@ class SocraticChatEngine {
 
       // Case: Direct Connection (No filter, no diverter)
       if (intake && recharge && !divert && !filter) {
-        updateSocraticProgress(1);
-        saveLayout();
-        setMascotState('hint');
+        this.callbacks.onUpdateProgress(1);
+        this.callbacks.onSaveLayout();
+        this.callbacks.onSetMascotState('hint');
         
         this.state.activeTree = 'direct_connection_dust';
         this.state.stepIndex = 0;
         this.state.questionCount = 1;
         
         const q = this.challenges['direct_connection_dust'].initial_question;
-        this.addAIBubble({
+        this.callbacks.onAddBubble({
+          id: 'eval-' + Date.now(),
+          sender: 'ai',
           type: 'hint',
           textEn: q.textEn,
           textHi: q.textHi,
@@ -318,16 +235,18 @@ class SocraticChatEngine {
 
       // Case: No first flush diverter placed (but filter is placed)
       if (intake && filter && recharge && !divert) {
-        updateSocraticProgress(2);
-        saveLayout();
-        setMascotState('hint');
+        this.callbacks.onUpdateProgress(2);
+        this.callbacks.onSaveLayout();
+        this.callbacks.onSetMascotState('hint');
         
         this.state.activeTree = 'first_flush_divert';
         this.state.stepIndex = 0;
         this.state.questionCount = 1;
         
         const q = this.challenges['first_flush_divert'].initial_question;
-        this.addAIBubble({
+        this.callbacks.onAddBubble({
+          id: 'eval-' + Date.now(),
+          sender: 'ai',
           type: 'hint',
           textEn: q.textEn,
           textHi: q.textHi,
@@ -338,16 +257,18 @@ class SocraticChatEngine {
 
       // Case: High tech membrane filter used (budget crash check)
       if (intake && divert && filter && filter.id === 'comp-membrane') {
-        updateSocraticProgress(2);
-        saveLayout();
-        setMascotState('hint');
+        this.callbacks.onUpdateProgress(2);
+        this.callbacks.onSaveLayout();
+        this.callbacks.onSetMascotState('hint');
         
         this.state.activeTree = 'budget_filter_choice';
         this.state.stepIndex = 0;
         this.state.questionCount = 1;
         
         const q = this.challenges['budget_filter_choice'].initial_question;
-        this.addAIBubble({
+        this.callbacks.onAddBubble({
+          id: 'eval-' + Date.now(),
+          sender: 'ai',
           type: 'hint',
           textEn: q.textEn,
           textHi: q.textHi,
@@ -362,43 +283,35 @@ class SocraticChatEngine {
           filter && (filter.id === 'comp-filter' || filter.id === 'comp-filter-chamber') &&
           recharge && (recharge.id === 'comp-well' || recharge.id === 'comp-recharge-well')) {
         
-        updateSocraticProgress(3);
-        saveLayout();
-        setMascotState('success');
-        addFeedbackBanner("✅ Congratulations! System Designed Successfully!");
+        this.callbacks.onUpdateProgress(3);
+        this.callbacks.onSaveLayout();
+        this.callbacks.onSetMascotState('success');
         
-        this.addAIBubble({
+        this.callbacks.onAddBubble({
+          id: 'banner-' + Date.now(),
+          sender: 'system',
+          type: 'success-banner',
+          textEn: "✅ Congratulations! System Designed Successfully!",
+          textHi: "✅ बधाई हो! प्रणाली सफलतापूर्वक डिज़ाइन की गई!"
+        });
+        
+        this.callbacks.onAddBubble({
+          id: 'success-' + Date.now(),
+          sender: 'ai',
           type: 'decompose',
           textEn: "<strong>Incredible work, beta! 🏮✨</strong> You have designed a flawless, low-cost rainwater harvesting recharge system for the village! You bypassed the initial dust, filtered the silt with sand and gravel, and safely recharged the groundwater.<br/><br/>You have mastered **Hydrology & Infrastructure Planning**! +150 XP!",
           textHi: "<strong>शानदार काम, बेटा! 🏮✨</strong> आपने गाँव के लिए एक दोषरहित, कम लागत वाला वर्षा जल संचयन रीचार्ज सिस्टम तैयार किया है! आपने शुरूआती धूल को अलग किया, रेत और बजरी से गाद को छाना और भूजल को सुरक्षित रूप से रीचार्ज किया।<br/><br/>आपने **जल विज्ञान और बुनियादी ढांचा योजना (Hydrology & Infrastructure Planning)** में महारत हासिल की है! +150 XP!"
         });
 
-        // Award rewards
-        awardXP(150);
-        const resilienceBadge = document.getElementById('badge-resilience');
-        if (resilienceBadge) resilienceBadge.classList.remove('locked');
-        
-        const step2 = document.getElementById('step-2-item');
-        if (step2) {
-          step2.className = 'step-item done';
-          step2.querySelector('.step-indicator').textContent = '✓';
-        }
-        const step3 = document.getElementById('step-3-item');
-        if (step3) step3.className = 'step-item active';
-
-        // Update skill metrics
-        skillData[0] = 92; 
-        skillData[1] = 84; 
-        skillData[2] = 98; 
-        animFrame = 0;
-        animateRadar();
-        
+        this.callbacks.onAwardXP(150);
         this.state.activeTree = null;
         return;
       }
 
       // Fallback
-      this.addAIBubble({
+      this.callbacks.onAddBubble({
+        id: 'fallback-' + Date.now(),
+        sender: 'ai',
         type: 'hint',
         textEn: "You are experimental, beta! Let's trace the water: it must flow from Rooftop (Step 1) -> First-Flush (Step 2) -> Sand/Gravel Filter (Step 3) -> Recharge Well (Step 4) to ensure absolute purity and cost efficiency. Give that sequence a shot!",
         textHi: "आप बहुत प्रयोग कर रहे हैं, बेटा! आइए पानी के मार्ग को देखें: शुद्धता और कम खर्च के लिए पानी रूफटॉप (स्टेप 1) -> फर्स्ट-फ्लश (स्टेप 2) -> रेत/बजरी फिल्टर (स्टेप 3) -> रीचार्ज कुआं (स्टेप 4) से होकर बहना चाहिए। इस क्रम को एक बार आज़माएं!"
@@ -408,19 +321,24 @@ class SocraticChatEngine {
     }, delay);
   }
 
-  handleStudentMessage(text) {
+  handleStudentMessage(text: string) {
     if (!text.trim()) return;
 
-    this.addStudentBubble(text);
+    this.callbacks.onAddBubble({
+      id: 'student-msg-' + Date.now(),
+      sender: 'student',
+      type: 'chat',
+      textEn: text,
+      textHi: text
+    });
 
     const delay = Math.floor(Math.random() * 300) + 500;
-    this.showTypingIndicator();
+    this.callbacks.onShowTyping();
 
     setTimeout(() => {
-      this.hideTypingIndicator();
+      this.callbacks.onHideTyping();
 
       if (!this.state.activeTree) {
-        // Smart free-form teaching mode — respond to what they're actually asking
         const lc = text.toLowerCase();
 
         const teachings = [
@@ -448,12 +366,12 @@ class SocraticChatEngine {
               if (lc.includes('pipes') || lc.includes('conduit')) {
                 return { textEn: "The <strong>Conduit Pipes</strong> are the connective tissue of the system — they transport water from one component to the next. Think of them as the roads between stations! Without pipes, your rooftop collector has nowhere to send its water. They're used between every major component in the pipeline.", textHi: "<strong>कंड्यूट पाइप</strong> सिस्टम की कनेक्टिव टिशू हैं — वे पानी को एक घटक से दूसरे घटक तक ले जाती हैं।" };
               }
-              return { textEn: `Good question, beta! Let me think about "<em>${this.escapeHtml(text)}</em>"... This challenge focuses on rainwater harvesting for a village. Try asking me about any specific component (Rooftop Collector, First-Flush Diverter, Sand/Gravel Filter, Recharge Well) or about the water cycle! Or drag components to the pipeline above and click <strong>Test My Design</strong> to get Socratic feedback.`, textHi: `अच्छा सवाल, बेटा! किसी भी घटक के बारे में पूछें या पाइपलाइन में घटक खींचें और <strong>Test My Design</strong> दबाएं।` };
+              return { textEn: `Good question, beta! Let me think about "<em>${this.escapeHtml(text)}</em>"... Try asking me about any specific component or drag components to the pipeline above and click <strong>Test My Design</strong> to get Socratic feedback.`, textHi: `अच्छा सवाल, बेटा! किसी भी घटक के बारे में पूछें या पाइपलाइन में घटक खींचें और <strong>Test My Design</strong> दबाएं।` };
             }
           },
           {
             keywords: ['why', 'should i', 'which', 'what should', 'which one', 'suggest'],
-            fn: () => ({ textEn: "Here's how to think about it, beta! 🤔 The correct pipeline order is: <strong>1. Rooftop Collector</strong> (catches rain) → <strong>2. First-Flush Diverter</strong> (throws away the first dirty water) → <strong>3. Sand/Gravel Filter</strong> (removes silt cheaply) → <strong>4. Recharge Well Inlet</strong> (replenishes groundwater). Each step solves a specific problem. Try building it on the canvas and hit <strong>Test My Design</strong>!", textHi: "सही पाइपलाइन क्रम है: रूफटॉप कलेक्टर → फर्स्ट-फ्लश डाइवर्टर → रेत/बजरी फ़िल्टर → रीचार्ज वेल इनलेट।" })
+            fn: () => ({ textEn: "Here's how to think about it, beta! 🤔 The correct pipeline order is: <strong>1. Rooftop Collector</strong> (catches rain) → <strong>2. First-Flush Diverter</strong> (throws away the first dirty water) → <strong>3. Sand/Gravel Filter</strong> (removes silt cheaply) → <strong>4. Recharge Well Inlet</strong> (replenishes groundwater). Try building it on the canvas and hit <strong>Test My Design</strong>!", textHi: "सही पाइपलाइन क्रम है: रूफटॉप कलेक्टर → फर्स्ट-फ्लश डाइवर्टर → रेत/बजरी फ़िल्टर → रीचार्ज वेल इनलेट।" })
           },
           {
             keywords: ['help', 'stuck', 'dont know', "don't know", 'lost', 'confused', 'idk'],
@@ -468,13 +386,20 @@ class SocraticChatEngine {
         for (const t of teachings) {
           if (t.keywords.some(k => lc.includes(k))) {
             const resp = t.fn();
-            this.addAIBubble({ type: 'decompose', ...resp });
+            this.callbacks.onAddBubble({
+              id: 'teach-' + Date.now(),
+              sender: 'ai',
+              type: 'decompose',
+              ...resp
+            });
             return;
           }
         }
 
-        // Final fallback — but still helpful
-        this.addAIBubble({
+        // Final fallback
+        this.callbacks.onAddBubble({
+          id: 'help-fallback-' + Date.now(),
+          sender: 'ai',
           type: 'hint',
           textEn: `You said: "<em>${this.escapeHtml(text)}</em>" — I'm your Rainwater Harvesting guide! Ask me anything about the components, how water filtration works, or why we need each step. Or try dragging parts into the pipeline above and click <strong>Test My Design →</strong> to start a Socratic learning session!`,
           textHi: `आप कह रहे हैं: "<em>${this.escapeHtml(text)}</em>" — किसी भी घटक के बारे में पूछें या पाइपलाइन में घटक रखें और <strong>Test My Design</strong> दबाएं!`
@@ -482,14 +407,15 @@ class SocraticChatEngine {
         return;
       }
 
-
       const activeTreeName = this.state.activeTree;
       const tree = this.challenges[activeTreeName];
       const steps = tree.steps;
       
       // Strict 4 questions loop cap
       if (this.state.questionCount >= 4) {
-        this.addAIBubble({
+        this.callbacks.onAddBubble({
+          id: 'simplify-' + Date.now(),
+          sender: 'ai',
           type: 'hint',
           textEn: `<strong>Let's simplify this, beta! 💡</strong> Here is exactly how we can wire it:<br/><br/>${tree.fallbackEn || tree.fallback_visual_description}`,
           textHi: `<strong>इसे आसान बनाते हैं, बेटा! 💡</strong> इसे हमें बिल्कुल इस तरह जोड़ना है:<br/><br/>${tree.fallbackHi || tree.fallbackEn}`
@@ -504,7 +430,7 @@ class SocraticChatEngine {
       // Keyword matching
       let matchesKeywords = false;
       if (currentStep.keywords) {
-        matchesKeywords = currentStep.keywords.some(kw => normalizedText.includes(kw));
+        matchesKeywords = currentStep.keywords.some((kw: string) => normalizedText.includes(kw));
       }
       if (currentStep.chips && currentStep.chips[0] && normalizedText.includes(currentStep.chips[0].toLowerCase())) {
         matchesKeywords = true;
@@ -516,14 +442,16 @@ class SocraticChatEngine {
         
         if (this.state.stepIndex < steps.length) {
           const nextStep = steps[this.state.stepIndex];
-          this.addAIBubble({
+          this.callbacks.onAddBubble({
+            id: 'step-' + Date.now(),
+            sender: 'ai',
             type: 'decompose',
             textEn: nextStep.questionEn || nextStep.question,
             textHi: nextStep.questionHi || nextStep.questionEn || nextStep.question,
             chips: nextStep.chips
           });
         } else {
-          // Finished the Socratic path
+          // Finished Socratic path
           let solEn = "";
           let solHi = "";
           
@@ -538,7 +466,9 @@ class SocraticChatEngine {
             solHi = "बिल्कुल सही! इसे कम लागत वाले <strong>रेत/बजरी फ़िल्टर (Sand/Gravel Filter)</strong> से बदलने से प्रारंभिक स्थापना और रखरखाव का खर्च कम हो जाता है, जिससे हमारा सिस्टम टिकाऊ बनता है!";
           }
           
-          this.addAIBubble({
+          this.callbacks.onAddBubble({
+            id: 'sol-' + Date.now(),
+            sender: 'ai',
             type: 'decompose',
             textEn: solEn,
             textHi: solHi
@@ -549,14 +479,18 @@ class SocraticChatEngine {
         this.state.questionCount++;
         
         if (this.state.questionCount >= 4) {
-          this.addAIBubble({
+          this.callbacks.onAddBubble({
+            id: 'simplify-' + Date.now(),
+            sender: 'ai',
             type: 'hint',
             textEn: `<strong>Let's simplify this, beta! 💡</strong> Here is exactly how we can wire it:<br/><br/>${tree.fallbackEn || tree.fallback_visual_description}`,
             textHi: `<strong>इसे आसान बनाते हैं, बेटा! 💡</strong> इसे हमें बिल्कुल इस तरह जोड़ना है:<br/><br/>${tree.fallbackHi || tree.fallbackEn}`
           });
           this.state.activeTree = null;
         } else {
-          this.addAIBubble({
+          this.callbacks.onAddBubble({
+            id: 'hint-retry-' + Date.now(),
+            sender: 'ai',
             type: 'hint',
             textEn: `Let's think again, beta! Look closely at the choices. ${currentStep.questionEn || currentStep.question}`,
             textHi: `एक बार फिर सोचें, बेटा! विकल्पों को ध्यान से देखें। ${currentStep.questionHi || currentStep.questionEn || currentStep.question}`,
@@ -571,22 +505,18 @@ class SocraticChatEngine {
     this.state.hintCounter++;
     
     if (this.state.hintCounter >= 8) {
-      const modal = document.getElementById('modal-self-reflect');
-      if (modal) {
-        modal.style.display = 'flex';
-        // force reflow
-        void modal.offsetWidth;
-        modal.style.opacity = '1';
-      }
+      this.callbacks.onOpenReflectionModal();
       return;
     }
 
-    this.showTypingIndicator();
-    if (window.setMascotState) window.setMascotState('hint');
+    this.callbacks.onShowTyping();
+    this.callbacks.onSetMascotState('hint');
     
     setTimeout(() => {
-      this.hideTypingIndicator();
-      this.addAIBubble({
+      this.callbacks.onHideTyping();
+      this.callbacks.onAddBubble({
+        id: 'nudge-' + Date.now(),
+        sender: 'ai',
         type: 'hint',
         textEn: "A gentle nudge, beta! 💡 The water should pass through a filter of sand and gravel before entering the recharge well. Make sure you place the <strong>Sand/Gravel Filter</strong> in Step 3!",
         textHi: "एक हल्का संकेत, बेटा! 💡 पानी को रीचार्ज कुएं में प्रवेश करने से पहले रेत और बजरी के फिल्टर से गुजरना चाहिए। सुनिश्चित करें कि आप <strong>Sand/Gravel Filter</strong> को स्टेप 3 में रखें!"
@@ -594,143 +524,18 @@ class SocraticChatEngine {
     }, 1000);
   }
 
-  submitReflection(text) {
-    if (window.queueOutboxAction) {
-      window.queueOutboxAction('student_1', 'SELF_REFLECTION', { text, timestamp: Date.now() });
-    }
-    
-    const modal = document.getElementById('modal-self-reflect');
-    if (modal) {
-      modal.style.opacity = '0';
-      setTimeout(() => {
-        modal.style.display = 'none';
-      }, 300);
-    }
-    
-    this.state.hintCounter = 0;
-    this.requestHint(); 
+  submitReflection(text: string) {
+    this.state.hintCounter = 0; // reset hint count
+    this.callbacks.onAddBubble({
+      id: 'reflection-response-' + Date.now(),
+      sender: 'ai',
+      type: 'hint',
+      textEn: "Thank you for reflecting, beta! Your hints are now unlocked. Remember: learning is a journey, not a race. You've got this! 🌱",
+      textHi: "चिंतन करने के लिए धन्यवाद, बेटा! आपके संकेत अब अनलॉक हो गए हैं। याद रखें: सीखना एक यात्रा है, दौड़ नहीं। आप यह कर सकते हैं! 🌱"
+    });
   }
 
-  toggleLanguage(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    
-    // Toggle state reactive variable
-    const nextLang = this.state.language === 'en' ? 'hi' : 'en';
-    this.state.language = nextLang;
-
-    // Retain textarea focus to not interrupt student's typing flow
-    const input = document.getElementById('studentInput');
-    if (input) {
-      input.focus();
-    }
-  }
-
-  showTypingIndicator() {
-    const indicator = document.getElementById('typingIndicator');
-    if (indicator) {
-      indicator.style.display = 'flex';
-      this.scrollChat();
-    }
-  }
-
-  hideTypingIndicator() {
-    const indicator = document.getElementById('typingIndicator');
-    if (indicator) {
-      indicator.style.display = 'none';
-    }
-  }
-
-  addStudentBubble(text) {
-    const chat = document.getElementById('chatArea');
-    if (!chat) return;
-
-    const div = document.createElement('div');
-    div.className = 'msg-student';
-    div.setAttribute('aria-live', 'polite');
-    div.setAttribute('role', 'log');
-
-    div.innerHTML = `
-      <div class="student-bubble" style="background: var(--indigo); border: none; color: var(--white);">
-        ${this.escapeHtml(text)}
-      </div>
-    `;
-    chat.insertBefore(div, document.getElementById('typingIndicator'));
-    this.scrollChat();
-  }
-
-  addAIBubble(resp) {
-    const chat = document.getElementById('chatArea');
-    if (!chat) return;
-
-    const div = document.createElement('div');
-    div.className = 'msg-ai';
-    div.setAttribute('aria-live', 'polite');
-    div.setAttribute('role', 'log');
-
-    let chipsHtml = '';
-    if (resp.chips) {
-      chipsHtml = `<div class="scaffold-chips">` +
-        resp.chips.map(c => `<div class="scaffold-chip" onclick="fillInput('${c}')">${c}</div>`).join('') +
-        `</div>`;
-    }
-
-    const textEn = resp.textEn || resp.text || "";
-    const textHi = resp.textHi || resp.textEn || resp.text || "";
-
-    const activeText = this.state.language === 'hi' ? textHi : textEn;
-
-    let bubbleStyle = `border: 1px solid var(--indigo); background: var(--surface); color: var(--text); position: relative;`;
-    let labelColorStyle = `color: var(--indigo);`;
-    
-    if (resp.type === 'hint') {
-      bubbleStyle = `border: 1px solid var(--coral); background: var(--surface); color: var(--text); position: relative;`;
-      labelColorStyle = `color: var(--coral);`;
-    } else if (resp.type === 'decompose') {
-      bubbleStyle = `border: 1px solid var(--mint); background: var(--surface); color: var(--text); position: relative;`;
-      labelColorStyle = `color: var(--mint);`;
-    }
-
-    const labelText = resp.type === 'hint' ? '💡 Sparky\'s Hint' :
-                      resp.type === 'decompose' ? '🧩 Socratic Step' : '🏮 Sparky';
-
-    const isEnActive = this.state.language === 'en' ? 'active' : '';
-    const isHiActive = this.state.language === 'hi' ? 'active' : '';
-
-    div.innerHTML = `
-      <div class="ai-avatar" id="sparkyAvatar">🏮</div>
-      <div class="ai-bubble" style="${bubbleStyle}" data-text-en="${this.escapeAttribute(textEn)}" data-text-hi="${this.escapeAttribute(textHi)}">
-        <button class="translate-toggle-btn" onclick="window.socraticEngine.toggleLanguage(event)" aria-label="Translate bubble">
-          <span class="lang-label en ${isEnActive}">EN</span>
-          <span class="lang-divider">|</span>
-          <span class="lang-label hi ${isHiActive}">हिं</span>
-        </button>
-        <div class="ai-label" style="font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.3rem; padding-right: 48px; ${labelColorStyle}">
-          ${labelText}
-        </div>
-        <div class="ai-text-content">${activeText}</div>
-        ${chipsHtml}
-      </div>
-    `;
-    chat.insertBefore(div, document.getElementById('typingIndicator'));
-    this.scrollChat();
-  }
-
-  scrollChat() {
-    const chat = document.getElementById('chatArea');
-    if (chat) {
-      setTimeout(() => chat.scrollTop = chat.scrollHeight, 50);
-    }
-  }
-
-  escapeHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-
-  escapeAttribute(s) {
-    return s.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  private escapeHtml(s: string): string {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 }
-
-// Instantiate Socratic engine globally
-window.socraticEngine = new SocraticChatEngine();

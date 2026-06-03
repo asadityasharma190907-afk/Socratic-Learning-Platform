@@ -34,3 +34,7 @@ dist/
 build/
 .agents/.story-automator-active
 story_automator/
+
+# Next.js
+.next/
+out/

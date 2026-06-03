@@ -646,6 +646,75 @@
 
 </div>
 
+<!-- STUDENT DETAIL MODAL -->
+<div id="studentModal" style="
+  display:none; position:fixed; inset:0;
+  background:rgba(11,15,25,0.75); backdrop-filter:blur(14px);
+  z-index:500; align-items:center; justify-content:center;
+" onclick="if(event.target===this)closeStudentModal()">
+  <div style="
+    background:var(--slate-800); border:1px solid rgba(255,255,255,0.1);
+    border-radius:20px; padding:1.75rem; width:90%; max-width:480px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.6);
+    animation: feedSlide 0.3s ease;
+  ">
+    <!-- Modal Header -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem;">
+      <div style="display:flex; align-items:center; gap:0.9rem;">
+        <div id="modalAvatar" style="
+          width:48px; height:48px; border-radius:50%;
+          display:flex; align-items:center; justify-content:center;
+          font-size:1rem; font-weight:700;
+        "></div>
+        <div>
+          <div id="modalName" style="font-size:1.05rem; font-weight:700; color:var(--white);"></div>
+          <div id="modalStatus" style="font-size:0.72rem; font-weight:600; margin-top:0.15rem;"></div>
+        </div>
+      </div>
+      <button onclick="closeStudentModal()" style="
+        background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
+        border-radius:8px; color:var(--text-muted); cursor:pointer;
+        width:32px; height:32px; font-size:1rem; display:flex;
+        align-items:center; justify-content:center;
+      ">&times;</button>
+    </div>
+    <!-- XP + Stats Row -->
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.7rem; margin-bottom:1.25rem;">
+      <div style="background:var(--slate-700); border-radius:12px; padding:0.75rem; text-align:center;">
+        <div id="modalXP" style="font-size:1.2rem; font-weight:800; color:var(--indigo-light);"></div>
+        <div style="font-size:0.62rem; color:var(--text-muted); margin-top:0.2rem;">Total XP</div>
+      </div>
+      <div style="background:var(--slate-700); border-radius:12px; padding:0.75rem; text-align:center;">
+        <div id="modalHints" style="font-size:1.2rem; font-weight:800; color:var(--amber);"></div>
+        <div style="font-size:0.62rem; color:var(--text-muted); margin-top:0.2rem;">Hints Used</div>
+      </div>
+      <div style="background:var(--slate-700); border-radius:12px; padding:0.75rem; text-align:center;">
+        <div id="modalGrit" style="font-size:1.2rem; font-weight:800; color:var(--mint);"></div>
+        <div style="font-size:0.62rem; color:var(--text-muted); margin-top:0.2rem;">Grit Index</div>
+      </div>
+    </div>
+    <!-- Skills Bars -->
+    <div style="font-size:0.65rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.6rem;">Skill Breakdown</div>
+    <div id="modalSkills" style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1.25rem;"></div>
+    <!-- Challenge Status -->
+    <div style="font-size:0.65rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.5rem;">Challenge Progress</div>
+    <div id="modalChallenge" style="background:var(--slate-700); border-radius:10px; padding:0.75rem; font-size:0.8rem; line-height:1.5; color:rgba(241,245,249,0.85);"></div>
+    <!-- Actions -->
+    <div style="display:flex; gap:0.7rem; margin-top:1.1rem;">
+      <button onclick="showNotification('Opening workspace for ' + document.getElementById('modalName').textContent + '...'); closeStudentModal();" style="
+        flex:1; background:var(--indigo-dim); border:1px solid var(--indigo-border);
+        border-radius:10px; color:var(--indigo-light); font-family:'Outfit',sans-serif;
+        font-size:0.78rem; font-weight:600; padding:0.6rem; cursor:pointer;
+      ">Inspect Workspace →</button>
+      <button onclick="showNotification('Pairing intervention sent!'); closeStudentModal();" style="
+        flex:1; background:rgba(30,255,160,0.08); border:1px solid rgba(30,255,160,0.2);
+        border-radius:10px; color:var(--mint-dark); font-family:'Outfit',sans-serif;
+        font-size:0.78rem; font-weight:600; padding:0.6rem; cursor:pointer;
+      ">Send Support →</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST NOTIFICATION -->
 <div id="toast" style="
   position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%) translateY(80px);
@@ -696,7 +765,7 @@
     const filtered = activeFilter === 'all' ? students : students.filter(s => s.status === activeFilter);
     
     grid.innerHTML = filtered.map(s => `
-      <div class="student-card ${s.status}" title="${s.name} (XP: ${s.xp})" onclick="showNotification('${s.name} status: ${statusMsg(s.status)} - ${s.xp} XP')">
+      <div class="student-card ${s.status}" title="${s.name}" onclick="openStudentModal(${students.indexOf(s)})">
         <div class="student-card-avatar">
           ${s.initials}
           <div class="status-dot"></div>
@@ -905,7 +974,79 @@
     }
   });
 
-  // Initial runs
+  // ── STUDENT DETAIL MODAL ──
+  // Per-student stats (skills + extra data keyed by student index)
+  const studentStats = students.map((s, i) => {
+    const base = s.xp;
+    const seed = i + 1;
+    return {
+      hydrology:    Math.min(99, 40 + (seed * 17 % 55)),
+      critical:     Math.min(99, 35 + (seed * 23 % 60)),
+      grit:         Math.min(99, 45 + (seed * 13 % 50)),
+      collab:       Math.min(99, 38 + (seed * 29 % 55)),
+      hints:        s.status === 'stuck' ? (5 + seed % 4) : s.status === 'needs-attention' ? (2 + seed % 3) : (seed % 3),
+    };
+  });
+
+  function openStudentModal(index) {
+    const s = students[index];
+    const stats = studentStats[index];
+    const modal = document.getElementById('studentModal');
+
+    // Status colours
+    const statusColors = {
+      'thriving': { bg: 'rgba(30,255,160,0.15)', color: 'var(--mint)', label: '🟢 Thriving' },
+      'needs-attention': { bg: 'rgba(255,179,71,0.15)', color: 'var(--amber)', label: '🟡 Needs Scaffolding' },
+      'stuck': { bg: 'rgba(255,107,74,0.15)', color: 'var(--coral)', label: '🔴 Stuck / Struggling' }
+    };
+    const sc = statusColors[s.status];
+
+    // Populate header
+    document.getElementById('modalAvatar').textContent = s.initials;
+    document.getElementById('modalAvatar').style.background = sc.bg;
+    document.getElementById('modalAvatar').style.color = sc.color;
+    document.getElementById('modalName').textContent = s.name;
+    document.getElementById('modalStatus').textContent = sc.label;
+    document.getElementById('modalStatus').style.color = sc.color;
+
+    // Stats row
+    document.getElementById('modalXP').textContent = s.xp.toLocaleString() + ' XP';
+    document.getElementById('modalHints').textContent = stats.hints + ' used';
+    document.getElementById('modalGrit').textContent = stats.grit + '%';
+
+    // Skills bars
+    const skills = [
+      { label: 'Hydrology', value: stats.hydrology, color: '#635bff' },
+      { label: 'Critical Thinking', value: stats.critical, color: '#1effa0' },
+      { label: 'Grit / Perseverance', value: stats.grit, color: '#ffb347' },
+      { label: 'Collaboration', value: stats.collab, color: '#ff6b4a' },
+    ];
+    document.getElementById('modalSkills').innerHTML = skills.map(sk => `
+      <div>
+        <div style="display:flex; justify-content:space-between; font-size:0.72rem; margin-bottom:0.25rem;">
+          <span style="color:rgba(241,245,249,0.7);">${sk.label}</span>
+          <span style="color:${sk.color}; font-weight:700;">${sk.value}</span>
+        </div>
+        <div style="height:5px; background:var(--slate-600); border-radius:3px; overflow:hidden;">
+          <div style="height:100%; width:${sk.value}%; background:${sk.color}; border-radius:3px; transition:width 0.6s ease;"></div>
+        </div>
+      </div>
+    `).join('');
+
+    // Challenge progress
+    document.getElementById('modalChallenge').textContent = statusMsg(s.status);
+
+    // Show modal
+    modal.style.display = 'flex';
+    requestAnimationFrame(() => { modal.style.opacity = '1'; });
+  }
+
+  function closeStudentModal() {
+    const modal = document.getElementById('studentModal');
+    modal.style.display = 'none';
+  }
+
+
   renderStudents();
   renderFeed();
   requestAnimationFrame(animateRadar);

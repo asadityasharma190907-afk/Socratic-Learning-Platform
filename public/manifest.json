@@ -1,0 +1,22 @@
+{
+  "short_name": "SahAI",
+  "name": "SahAI for Shiksha",
+  "description": "Offline Socratic Challenge Platform for Rural India",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/student",
+  "background_color": "#0b0f19",
+  "theme_color": "#635bff",
+  "display": "standalone",
+  "orientation": "portrait"
+}
