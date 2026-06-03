@@ -1612,3 +1612,244 @@ input:checked + .slider:before {
   .cockpit-layout { grid-template-columns: 1fr; }
   .gap-panel, .feed-panel { display: none; }
 }
+
+/* ==========================================================================
+   ROLE SELECTION & LOGIN & SUBJECT SELECTION STYLES
+   ========================================================================== */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.role-card {
+  position: relative;
+  background: var(--slate-800);
+  border: 1px solid var(--border-subtle);
+  border-radius: 24px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.role-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.role-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.role-card.role-student:hover { border-color: var(--mint-border); box-shadow: 0 20px 40px rgba(30, 255, 160, 0.1); }
+.role-card.role-teacher:hover { border-color: var(--indigo-border); box-shadow: 0 20px 40px rgba(99, 91, 255, 0.1); }
+
+.role-card-inner {
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.role-icon-wrap {
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.role-card:hover .role-icon-wrap { transform: scale(1.1); }
+.role-student:hover .role-icon-wrap { background: var(--mint-dim); border-color: var(--mint-border); }
+.role-teacher:hover .role-icon-wrap { background: var(--indigo-dim); border-color: var(--indigo-border); }
+
+.role-icon { font-size: 2.5rem; }
+
+.role-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.role-description {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.role-btn-mock {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--white);
+  padding: 0.8rem 1.5rem;
+  border-radius: 100px;
+  background: var(--slate-700);
+  transition: all 0.3s ease;
+}
+
+.role-student:hover .role-btn-mock { background: var(--mint); color: var(--slate-900); }
+.role-teacher:hover .role-btn-mock { background: var(--indigo); color: var(--white); }
+
+.login-container {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.back-link {
+  align-self: flex-start;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s;
+}
+
+.back-link:hover { color: var(--white); }
+
+.login-card {
+  width: 100%;
+  background: var(--slate-800);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.login-header h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.login-header p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.form-input {
+  background: var(--slate-900);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus { border-color: var(--indigo-light); }
+
+.login-demo-note {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 1.5rem;
+}
+
+.btn-teacher { background: linear-gradient(135deg, var(--indigo), #4f46e5); }
+.btn-teacher:hover { box-shadow: 0 8px 24px rgba(99,91,255,0.4); }
+
+.btn-student { background: linear-gradient(135deg, var(--mint-dark), var(--mint)); color: var(--slate-900); }
+.btn-student:hover { box-shadow: 0 8px 24px rgba(30,255,160,0.3); }
+
+.subject-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.subject-card {
+  background: var(--slate-800);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.subject-card:hover { transform: translateY(-4px); background: var(--slate-700); }
+.subject-card.selected { border-color: var(--indigo); background: var(--indigo-dim); }
+
+.subject-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+.subject-name { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
+.subject-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+
+/* Custom Challenge Card Accents */
+.challenge-card.math::before { background: var(--indigo); }
+.challenge-card.math:hover { border-color: var(--indigo-border); }
+.challenge-card.math .card-icon-wrap { border-color: var(--indigo-border); background: var(--indigo-dim); }
+.challenge-card.math .card-subject-tag { color: var(--indigo-300); border-color: var(--indigo-border); background: var(--indigo-dim); }
+.challenge-card.math .btn-select { background: rgba(99, 91, 255, 0.08); border-color: var(--indigo-border); color: var(--indigo-300); }
+.challenge-card.math .btn-select:hover { background: rgba(99, 91, 255, 0.15); }
+
+.challenge-card.history::before { background: var(--amber); }
+.challenge-card.history:hover { border-color: rgba(255, 179, 71, 0.35); }
+.challenge-card.history .card-icon-wrap { border-color: rgba(255, 179, 71, 0.35); background: rgba(255, 179, 71, 0.15); }
+.challenge-card.history .card-subject-tag { color: var(--amber); border-color: rgba(255, 179, 71, 0.35); background: rgba(255, 179, 71, 0.15); }
+.challenge-card.history .btn-select { background: rgba(255, 179, 71, 0.08); border-color: rgba(255, 179, 71, 0.35); color: var(--amber); }
+.challenge-card.history .btn-select:hover { background: rgba(255, 179, 71, 0.15); }
+
+.challenge-card.english::before { background: var(--coral); }
+.challenge-card.english:hover { border-color: var(--coral-border); }
+.challenge-card.english .card-icon-wrap { border-color: var(--coral-border); background: var(--coral-dim); }
+.challenge-card.english .card-subject-tag { color: var(--coral); border-color: var(--coral-border); background: var(--coral-dim); }
+.challenge-card.english .btn-select { background: rgba(255, 107, 74, 0.08); border-color: var(--coral-border); color: var(--coral); }
+.challenge-card.english .btn-select:hover { background: rgba(255, 107, 74, 0.15); }
+

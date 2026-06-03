@@ -31,7 +31,17 @@ const initialStudents: Student[] = [
   { name: 'Arjun T.', initials: 'AT', status: 'needs-attention', xp: 870, hintsUsed: 5, gritIndex: 55, skills: [60, 58, 65, 62] },
   { name: 'Kavya R.', initials: 'KR', status: 'thriving', xp: 1210, hintsUsed: 2, gritIndex: 82, skills: [82, 80, 88, 82] },
   { name: 'Sahil M.', initials: 'SM', status: 'stuck', xp: 740, hintsUsed: 7, gritIndex: 35, skills: [42, 40, 50, 45] },
-  { name: 'Pooja N.', initials: 'PN', status: 'needs-attention', xp: 980, hintsUsed: 4, gritIndex: 60, skills: [65, 62, 70, 68] }
+  { name: 'Pooja N.', initials: 'PN', status: 'needs-attention', xp: 980, hintsUsed: 4, gritIndex: 60, skills: [65, 62, 70, 68] },
+  { name: 'Rohan B.', initials: 'RB', status: 'thriving', xp: 1250, hintsUsed: 1, gritIndex: 88, skills: [85, 80, 95, 80] },
+  { name: 'Meera I.', initials: 'MI', status: 'needs-attention', xp: 1020, hintsUsed: 3, gritIndex: 68, skills: [68, 65, 75, 70] },
+  { name: 'Ishaan V.', initials: 'IV', status: 'stuck', xp: 810, hintsUsed: 6, gritIndex: 45, skills: [55, 50, 58, 60] },
+  { name: 'Simran K.', initials: 'SK', status: 'thriving', xp: 1380, hintsUsed: 0, gritIndex: 92, skills: [90, 88, 96, 90] },
+  { name: 'Kabir D.', initials: 'KD', status: 'thriving', xp: 1150, hintsUsed: 2, gritIndex: 75, skills: [78, 75, 82, 74] },
+  { name: 'Tara L.', initials: 'TL', status: 'needs-attention', xp: 950, hintsUsed: 5, gritIndex: 58, skills: [62, 60, 68, 65] },
+  { name: 'Omar F.', initials: 'OF', status: 'stuck', xp: 790, hintsUsed: 7, gritIndex: 38, skills: [48, 45, 55, 50] },
+  { name: 'Zara H.', initials: 'ZH', status: 'thriving', xp: 1290, hintsUsed: 1, gritIndex: 86, skills: [86, 84, 90, 85] },
+  { name: 'Aditya S.', initials: 'AS', status: 'thriving', xp: 1450, hintsUsed: 0, gritIndex: 98, skills: [98, 95, 100, 92] },
+  { name: 'Maya P.', initials: 'MP', status: 'needs-attention', xp: 1050, hintsUsed: 3, gritIndex: 70, skills: [72, 70, 78, 75] }
 ];
 
 const initialFeed: FeedItem[] = [
