@@ -771,6 +771,32 @@
       color: rgba(136,153,187,0.4);
       z-index: 1000;
     }
+    /* ── PRINT MEDIA QUERY FOR PDF EXPORT ── */
+    @media print {
+      body, html {
+        height: auto;
+        overflow: visible;
+        background: var(--slate-900) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .deck {
+        height: auto;
+        overflow: visible;
+      }
+      .slide {
+        position: relative !important;
+        opacity: 1 !important;
+        transform: none !important;
+        page-break-after: always;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+      }
+      .nav-bar, .slide-num, .progress-bar, .key-hint {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 <body>
