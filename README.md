@@ -28,7 +28,7 @@ The following diagram illustrates how the student Socratic engine, local offline
 
 ```mermaid
 graph TD
-    subgraph Next.js App Router
+    subgraph AppRouter["Next.js App Router"]
         subgraph Student_Portal["Student Portal (/student)"]
             CanvasState[Challenge Draggable Canvas] -->|Validate Design| SocraticEngine{Socratic AI Engine}
             SocraticEngine -->|On-Track| StepUp[Advance Step & Award XP]
@@ -43,12 +43,12 @@ graph TD
         end
     end
     
-    subgraph Local Storage & Sync
+    subgraph LocalStorage["Local Storage & Sync"]
         DexieDB[(IndexedDB via Dexie.js)] <-->|Read/Write State| CanvasState
         DexieDB -.->|Classroom Data Feed| MasteryGrid
         DexieDB -.->|Behavioral Metrics| HolisticFeed
         DexieDB -.->|Growth Scoring| RadarChart
-        ServiceWorker[[PWA Service Worker]] -->|Caches Assets| Next.js App Router
+        ServiceWorker[[PWA Service Worker]] -->|Caches Assets| AppRouter
     end
 ```
 
