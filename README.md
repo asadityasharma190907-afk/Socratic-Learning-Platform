@@ -29,14 +29,14 @@ The following diagram illustrates how the student Socratic engine, local offline
 ```mermaid
 graph TD
     subgraph Next.js App Router
-        subgraph Student Portal [/student]
+        subgraph Student_Portal["Student Portal (/student)"]
             CanvasState[Challenge Draggable Canvas] -->|Validate Design| SocraticEngine{Socratic AI Engine}
             SocraticEngine -->|On-Track| StepUp[Advance Step & Award XP]
             SocraticEngine -->|Common Error| Decompose[Decompose to Sub-Question]
             SocraticEngine -->|Exceeds 8 Hints| Reflection[Self-Reflection Modal Lock]
         end
         
-        subgraph Teacher Cockpit [/teacher]
+        subgraph Teacher_Cockpit["Teacher Cockpit (/teacher)"]
             MasteryGrid[Classroom Mastery Grid]
             HolisticFeed[Real-time Support Feed]
             RadarChart[Holistic SVG Radar Chart]
